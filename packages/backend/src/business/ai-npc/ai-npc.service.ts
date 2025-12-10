@@ -69,6 +69,16 @@ export class AiNpcService {
 		const npcNames = [...Object.values(call_npc)];
 		// 初始化ai npc
 		for (const name of npcNames) {
+			// 如果已存在则不创建
+			const existingNpc = await this.dbService.ai_npc.findFirst({
+				where: {
+					game_archive_id: archiveId,
+					name: name
+				}
+			});
+			if (existingNpc) {
+				continue;
+			}
 			await this.dbService.ai_npc.create({
 				data: {
 					game_archive_id: archiveId,
