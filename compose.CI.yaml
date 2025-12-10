@@ -10,10 +10,6 @@ services:
         condition: service_healthy
       redis-container:
         condition: service_healthy
-      mongo-container:
-        condition: service_healthy
-      minio-container:
-        condition: service_healthy
     restart: unless-stopped
     container_name: backend
     # 将指定的文件的环境变量加载到容器中
@@ -26,25 +22,9 @@ services:
       # 覆盖env_file中的同名环境变量
       DATABASE_URL: mysql://root:qwqw1314.@mysql-container:3306/not_stone
     ports:
-      - '3003:3003'
+      - '3011:3003'
     volumes:
       - ./docker-data/nest-app/logs:/app/packages/backend/logs
-  nginx-container:
-    build:
-      context: .
-      dockerfile: ./docker/frontend/Dockerfile.CI
-    ports:
-      - '80:80' # HTTP
-      # HTTPS (如需启用)
-      # - '443:443' 
-    volumes:
-      - ./nginx/logs:/var/log/nginx # Nginx 日志
-      # 如果启用 HTTPS，还需要
-      # - ./nginx/ssl:/etc/nginx/ssl
-    restart: unless-stopped
-    depends_on:
-      - prisma-ai-backend
-      - minio-container
   mysql-container:
     image: library/mysql
     #占用的主机端口:网络内访问使用的端口

@@ -1,21 +1,12 @@
 # 从hub拉取镜像，用于用户部署
 services:
-
   not_stone-backend:
     image: docker.1ms.run/onlyie/not_stone:latest
     depends_on:
-      # mysql经常需要启动好几次才能成功,得在它启动成功后再启动服务
       mysql-container:
         condition: service_healthy
       redis-container:
         condition: service_healthy
-      mongo-container:
-        condition: service_healthy
-      minio-container:
-        condition: service_healthy
-      # 添加对 browserless-chrome 服务的依赖
-      browserless-chrome:
-        condition: service_started
     restart: unless-stopped
     container_name: backend
     # 将指定的文件的环境变量加载到容器中
@@ -36,7 +27,7 @@ services:
     ports:
       - '80:80' # HTTP
       # HTTPS (如需启用)
-      # - '443:443' 
+      # - '443:443'
     volumes:
       - ./nginx/logs:/var/log/nginx # Nginx 日志
       - ./nginx/conf/default.conf:/etc/nginx/conf.d/default.conf
@@ -44,8 +35,7 @@ services:
       # - ./nginx/ssl:/etc/nginx/ssl
     restart: unless-stopped
     depends_on:
-      - prisma-ai-backend
-      - minio-container
+      - not_stone-backend
   mysql-container:
     image: docker.1ms.run/library/mysql
     #占用的主机端口:网络内访问使用的端口
@@ -62,7 +52,7 @@ services:
       MYSQL_ROOT_HOST: '%'
     restart: unless-stopped
     healthcheck:
-      test: [ 'CMD', 'mysqladmin', 'ping', '-h', 'localhost' ]
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -74,7 +64,7 @@ services:
       - ./docker-data/redis:/data
     restart: unless-stopped
     healthcheck:
-      test: [ 'CMD', 'redis-cli', 'ping' ]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5

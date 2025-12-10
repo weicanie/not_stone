@@ -13,14 +13,9 @@ FROM node:${NODE_VERSION} AS builder
 # 安装 pnpm 
 RUN npm install -g pnpm@${PNPM_VERSION}
 
-# 设置环境变量，跳过 puppeteer 下载浏览器
-ENV PUPPETEER_SKIP_DOWNLOAD=true
-
 # 设置工作目录（容器内部）
 WORKDIR /app
 
-# 为 sharp 设置国内镜像源，解决下载超时问题
-# ENV SHARP_DIST_BASE_URL="https://npmmirror.com/mirrors/sharp-libvips"
 
 # COPY 电脑文件系统 容器文件系统
 # 复制整个monorepo的package.json和pnpm配置文件
