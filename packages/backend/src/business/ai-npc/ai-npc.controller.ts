@@ -108,7 +108,7 @@ export class AiNpcController {
 		@Query('rolename') rolename: keyof typeof cnNameToEnglish,
 		@Query('llm_type') llm_type: LLMCanUse,
 		@Query('api_key') api_key: string
-	): Promise<string> {
+	): Promise<ModAccountData> {
 		// 对所有参数进行URL解码
 		username = decodeURIComponent(username);
 		password = decodeURIComponent(password);
@@ -150,6 +150,6 @@ export class AiNpcController {
 			token
 		};
 
-		return JSON.stringify(data);
+		return data;
 	}
 }

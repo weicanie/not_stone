@@ -6,6 +6,12 @@ import { map } from 'rxjs/operators';
 @Injectable()
 export class GlobalInterceptor implements NestInterceptor {
 	intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+		const request = context.switchToHttp().getRequest();
+		// 如果请求是init-account，则不统一格式，直接返回
+		if (request.url.includes('init-account')) {
+			return next.handle();
+		}
+
 		return next.handle().pipe(
 			map(data => {
 				const result: ServerDataFormat = {
