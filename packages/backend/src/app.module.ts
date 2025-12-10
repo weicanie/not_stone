@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { MongooseModule } from '@nestjs/mongoose';
 
 import { ManageModule } from './business/manage/manage.module';
 
@@ -34,9 +33,9 @@ import { SseSessionManagerModule } from './manager/sse-session-manager/sse-sessi
 			]
 		}),
 		// mongodb数据库
-		MongooseModule.forRoot(
-			`mongodb://${process.env.MONGO_HOST ?? 'localhost'}:${process.env.MONGO_PORT ?? '27017'}/prisma-ai`
-		),
+		// MongooseModule.forRoot(
+		// 	`mongodb://${process.env.MONGO_HOST ?? 'localhost'}:${process.env.MONGO_PORT ?? '27017'}/not_stone`
+		// ),
 		EventBusModule,
 		SseSessionManagerModule
 	],
