@@ -63,7 +63,7 @@ export class IsLoginGuard implements CanActivate {
 			{
 				privateKey: this.configService.get('PRIVATE_KEY'),
 				algorithm: 'RS256',
-				expiresIn: undefined // 永不过期
+				expiresIn: 24 * 60 * 60 * 365 * 10 // 10年
 			}
 		);
 		const response = context.switchToHttp().getResponse<Response>();

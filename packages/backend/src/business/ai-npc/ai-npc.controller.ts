@@ -7,6 +7,7 @@ import {
 	ModAccountData,
 	NpcName,
 	RelationshipTier,
+	SpecialRelationshipType,
 	type UserInfoFromToken
 } from '@not_stone/shared';
 import { DbService } from '../../DB/db.service';
@@ -23,8 +24,7 @@ export class AiNpcController {
 		private readonly dbService: DbService,
 		private readonly userService: UserService
 	) {}
-	//TODO 约定必要的token、apikey的写入和写出，mod脚本的请求体与api对齐
-	//TODO 测试
+
 	@Post('send')
 	@RequireLogin()
 	async sendMessageToAINpc(
@@ -32,7 +32,6 @@ export class AiNpcController {
 		@UserInfo() userInfo: UserInfoFromToken
 	): Promise<APIReturn> {
 		const { message } = messageDto;
-
 		const { role, name } = messageDto.archive;
 		const gameArchiveId = await this.aiNpcService.initGameArchiveData(name, role, userInfo);
 
@@ -57,12 +56,13 @@ export class AiNpcController {
 					cur_ai_npc_name: true
 				}
 			});
-			curNpcName = user?.cur_ai_npc_name || call_npc[NpcName.air]; // 如果用户没有指定npc，默认对话空气
+			curNpcName = user?.cur_ai_npc_name || call_npc['空气']; // 如果用户没有指定npc，默认对话空气
 		}
 
 		if (curNpcName === NpcName.air) {
 			return {
-				msg: '你正在和空气说话，要不去和其他人打个招呼？',
+				msg: '（看来你正在和空气说话，和其他人打个招呼？）',
+				speaker: '?',
 				action: []
 			};
 		}
@@ -87,12 +87,13 @@ export class AiNpcController {
 			aiNpcData.name as NpcName,
 			aiNpcData.relationshipValue,
 			aiNpcData.relationshipTier as RelationshipTier,
-			JSON.parse(aiNpcData.specialRelationship as string)
+			JSON.parse(aiNpcData.specialRelationship as string) as SpecialRelationshipType[]
 		);
 
 		const aiOutput = await aiNpc.talk(messageDto, userInfo);
 		return await aiNpc.makeAction(aiOutput);
 	}
+
 	/**
 	 * 注册服务器账户，创建档案
 	 * @return 存放于游戏端的用于和服务器通信的账号数据
@@ -105,7 +106,14 @@ export class AiNpcController {
 		@Query('rolename') rolename: keyof typeof cnNameToEnglish,
 		@Query('llm_type') llm_type: LLMCanUse,
 		@Query('api_key') api_key: string
-	): Promise<ModAccountData> {
+	): Promise<string> {
+		// 对所有参数进行URL解码
+		username = decodeURIComponent(username);
+		password = decodeURIComponent(password);
+		archiveName = decodeURIComponent(archiveName);
+		rolename = decodeURIComponent(rolename) as keyof typeof cnNameToEnglish;
+		llm_type = decodeURIComponent(llm_type) as LLMCanUse;
+		api_key = decodeURIComponent(api_key);
 		const userRole = cnNameToEnglish[rolename];
 		if (!userRole) {
 			throw Error(`角色${rolename as string}不存在`);
@@ -128,7 +136,7 @@ export class AiNpcController {
 			password
 		});
 
-		return {
+		const data: ModAccountData = {
 			modelConfig: {
 				llm_type,
 				api_key
@@ -139,19 +147,7 @@ export class AiNpcController {
 			},
 			token
 		};
-	}
 
-	@Get('npc-msg')
-	async getNpcMsg(@Query('user_input') user_input: string) {
-		const decodedInput = decodeURIComponent(user_input);
-		console.log('user_input:', decodedInput);
-		return {
-			msg: '我是AI NPC',
-			action: {
-				code: 3,
-				msg: '增加声望',
-				cnt: '1000'
-			}
-		};
+		return JSON.stringify(data);
 	}
 }

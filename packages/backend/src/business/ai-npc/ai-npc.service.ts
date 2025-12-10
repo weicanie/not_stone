@@ -75,8 +75,8 @@ export class AiNpcService {
 					name: name,
 					relationshipValue: 0,
 					relationshipTier: RelationshipTier.strange,
-					specialRelationship: [],
-					traits: []
+					specialRelationship: JSON.stringify([]),
+					traits: JSON.stringify([])
 				}
 			});
 		}
@@ -158,7 +158,7 @@ export class AiNpcService {
 				role,
 				false
 			);
-			const answer = await (chain as RunnableSequence).invoke({ input: `${role}：${userInput}` });
+			const answer = await (chain as RunnableSequence).invoke({ input: userInput });
 			return answer;
 		} catch (error) {
 			this.logger.error(error.stack);

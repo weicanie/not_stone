@@ -9,20 +9,21 @@ interface TAINpc {
 
 enum NpcName {
 	air = 'air', //当用户没有指定npc时，默认对话空气
+	/* 车队 */
 	verren = 'verren',
 	alda = 'alda',
-	zadok = 'zadok', // 布林港口酒鬼
-	bern = 'bern' // 布林老楼给介绍信的兵长
 	// darrel = 'darrel',
 	// leif = 'leif',
-}
-
-/* 可以只提供npc 名字，程序会部分匹配 */
-enum CaravanNpcKey {
-	verren = 'verren',
-	alda = 'alda'
-	// darrel = 'darrel',
-	// leif = 'leif'
+	/* 奥村 */
+	frid = 'frid', // 药师
+	alan = 'alan', // 磨坊主
+	hold = 'hold', // 奥斯布鲁克的裁缝
+	bert = 'bert', // 生意人
+	rickerd = 'rickerd', // 布林特使
+	jebar = 'jebar', // 铁匠
+	/* 布林 */
+	zadok = 'zadok', // 布林港口酒鬼
+	bern = 'bern' // 布林老楼给介绍信的兵长
 }
 
 /* 对话npc流程
@@ -36,8 +37,22 @@ const call_npc = {
 	阿尔达: NpcName.alda,
 	扎多克: NpcName.zadok,
 	博恩: NpcName.bern,
-	空气: NpcName.air
+	空气: NpcName.air,
+	弗利德: NpcName.frid,
+	阿兰: NpcName.alan,
+	霍特: NpcName.hold,
+	博特: NpcName.bert,
+	里柯德: NpcName.rickerd,
+	杰巴尔: NpcName.jebar
 };
+
+/* 可以只提供npc 名字，程序会部分匹配 */
+enum CaravanNpcKey {
+	verren = 'verren',
+	alda = 'alda'
+	// darrel = 'darrel',
+	// leif = 'leif'
+}
 
 /* 特质系统
   特质是npc个性的概括，目前仅影响对话。

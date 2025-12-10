@@ -150,6 +150,7 @@ class AINpc implements TAINpc {
 		// 返回回复和需要在游戏程序中进行的数据操作
 		return {
 			msg: aiOutput.reply,
+			speaker: this.npcName,
 			mod_action_msg,
 			action: game_action
 		};

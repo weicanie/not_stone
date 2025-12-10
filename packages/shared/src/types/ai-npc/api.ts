@@ -4,6 +4,7 @@
 interface APIReturn {
 	/* 消息（AI回复、NPC提问、系统提示等） */
 	msg: string;
+	speaker: string; // 用于在游戏日志中显示消息来源
 	/* 在mod服务器端发生的数据操作的汇报 */
 	mod_action_msg?: string;
 	/* 需要在游戏程序中进行的对游戏数据的操作 */

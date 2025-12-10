@@ -21,7 +21,7 @@ import { RedisService } from './redis.service';
 						host: configService.get('REDIS_HOST') ?? 'localhost',
 						port: +(configService.get('REDIS_PORT') ?? 6379)
 					},
-					database: 0
+					database: 1
 				});
 				const logger = new Logger();
 				try {

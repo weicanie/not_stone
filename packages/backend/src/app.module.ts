@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { ManageModule } from './business/manage/manage.module';
 
+import { AiNpcModule } from './business/ai-npc/ai-npc.module';
 import { UserModule } from './business/user/user.module';
 import { CacheModule } from './cache/cache.module';
 import { ChainModule } from './chain/chain.module';
@@ -17,7 +18,7 @@ import { SseSessionManagerModule } from './manager/sse-session-manager/sse-sessi
 @Module({
 	imports: [
 		/* 业务模块 */
-
+		AiNpcModule,
 		UserModule,
 		ManageModule,
 		/* 基础设施模块 */

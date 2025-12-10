@@ -9,11 +9,12 @@ import {
 	UserModelConfig,
 	UserRole
 } from '@not_stone/shared';
-import { BufferMemory } from 'langchain/memory';
 import { npc_story, user_role_story } from '../business/ai-npc/constants';
+import { DbService } from '../DB/db.service';
 import { GlmModel, GlmNeed, ModelService } from '../model/model.service';
 import { ThoughtModelService } from '../model/thought-model.service';
 import { PromptService } from '../prompt/prompt.service';
+import { PersistentConversationSummaryMemory } from '../utils/persistent-summary-memory';
 import { RubustStructuredOutputParser } from '../utils/RubustStructuredOutputParser';
 import { ChainService } from './chain.service';
 @Injectable()
@@ -23,11 +24,11 @@ export class AichatChainService {
 		public thoughtModelService: ThoughtModelService,
 		public promptService: PromptService,
 		public configService: ConfigService,
-		public chainService: ChainService
+		public chainService: ChainService,
+		private readonly dbService: DbService
 	) {}
 
-	transformAIMessageStream(llm: Runnable): Runnable<any, StreamingChunk> {
-		// 使用RunnableLambda封装整个流转换过程
+	private transformAIMessageStream(llm: Runnable): Runnable<any, StreamingChunk> {
 		const flatModel = new RunnableLambda<any, any>({
 			func: async (prompt: any) => {
 				const stream = await llm.stream(prompt);
@@ -69,26 +70,28 @@ export class AichatChainService {
 	) {
 		const prompt = await this.promptService.aiNpcSystemPrompt();
 		const chatHistory = this.modelService.getChatHistory(keyname); //使用自定义的chatHistory
-		//TODO 使用ConversationSummaryMemory时,会话记录会丢失,是chatHistory的保存逻辑没支持
-		// const memory = new ConversationSummaryMemory({
-		// 	chatHistory: chatHistory,
-		// 	memoryKey: 'history',
-		// 	llm: this.modelService.getLLMDeepSeekRaw('deepseek-chat')
-		// });
-		const memory = new BufferMemory({
+		const memory = new PersistentConversationSummaryMemory({
 			chatHistory: chatHistory,
-			memoryKey: 'history'
+			memoryKey: 'history',
+			llm: this.modelService.getLLMDeepSeekRaw('deepseek-chat', modelConfig.api_key),
+			dbService: this.dbService,
+			keyname: keyname,
+			maxTokenLimit: 4000
 		});
 
 		let llm: Runnable;
 		switch (modelConfig.llm_type) {
 			case LLMCanUse.v3:
-				//TODO 支持JSON mode？
-				llm = this.modelService.getLLMDeepSeekRaw(
-					modelConfig.llm_type as 'deepseek-chat',
-					modelConfig.api_key
-				);
-				llm = this.transformAIMessageStream(llm);
+				const config = {
+					model: 'deepseek-chat',
+					configuration: {
+						apiKey: modelConfig.api_key,
+						timeout: 600000,
+						baseURL: this.configService.get('BASE_URL_DEEPSEEK'),
+						maxRetries: 3
+					}
+				};
+				llm = await this.modelService.getLLMDeepSeek(config);
 				break;
 			case LLMCanUse.r1:
 				llm = await this.thoughtModelService.getDeepSeekThinkingModleflat(
@@ -110,18 +113,21 @@ export class AichatChainService {
 					apiKey: modelConfig.api_key,
 					modelName: GlmModel.glm_4_6
 				});
-				llm = this.transformAIMessageStream(llm);
 				break;
 		}
 
 		const outputParser = RubustStructuredOutputParser.from(npcAIOutputSchema, this.chainService);
+		// 启用json mode
+		try {
+			llm = (llm as any).withStructuredOutput(npcAIOutputSchema);
+		} catch (error) {}
 
 		let lastInput = ''; //储存用户当前输入（以更新memory）
 		const seq: any = [
 			{
 				input: (input, options) => {
 					//! 历史记录中不记录关系内容，只记录用户输入内容
-					lastInput = JSON.parse(input).userInput;
+					lastInput = JSON.parse(input.input).userInput;
 					return input;
 				},
 				history: async (input: any, options: any) => {

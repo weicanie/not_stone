@@ -67,6 +67,7 @@ model ai_conversation {
   id      Int    @id @default(autoincrement())
   keyname String @unique @db.VarChar(100) // 对话唯一标识
   history Json? //ai（langchain）使用的聊天历史
+  summary String? @db.Text // 对话摘要
 
   game_archive_id Int //逻辑外键，指向game_archive表的id
   npc_name        String @db.VarChar(50) // 对话npc名称
