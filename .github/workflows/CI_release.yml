@@ -58,34 +58,3 @@ jobs:
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-
-  release-frontend-image:
-    needs: trigger-test-build
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
-    uses: ./.github/workflows/CI_build_nginx.yml
-    secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-  release-resume-editor-image:
-    needs: trigger-test-build
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
-    uses: ./.github/workflows/CI_build_resume_editor.yml
-    secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-  release-deepwiki-down-image:
-    needs: trigger-test-build
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
-    uses: ./.github/workflows/CI_build_deepwiki_down.yml
-    secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
