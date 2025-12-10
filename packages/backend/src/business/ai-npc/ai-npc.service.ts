@@ -67,6 +67,16 @@ export class AiNpcService {
 			throw new Error(`档案不存在，id：${archiveId}`);
 		}
 		const npcNames = [...Object.values(call_npc)];
+		// 查询当前档案的ai npc数量，若与总数一致则无需初始化
+		const npcCount = await this.dbService.ai_npc.count({
+			where: {
+				game_archive_id: archiveId
+			}
+		});
+		if (npcCount === npcNames.length) {
+			return;
+		}
+
 		// 初始化ai npc
 		for (const name of npcNames) {
 			// 如果已存在则不创建
@@ -91,6 +101,7 @@ export class AiNpcService {
 			});
 		}
 	}
+
 	//TODO
 	async initTasks() {}
 
