@@ -67,6 +67,8 @@ export class AiNpcController {
 			};
 		}
 
+		// 尝试更新npc列表
+		await this.aiNpcService.initAINpcData(gameArchiveId, messageDto.archive.role);
 		//从数据库中查询ai npc
 
 		const aiNpcData = await this.dbService.ai_npc.findFirst({

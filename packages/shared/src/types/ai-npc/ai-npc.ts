@@ -12,9 +12,10 @@ enum NpcName {
 	/* 车队 */
 	verren = 'verren',
 	alda = 'alda',
-	// darrel = 'darrel',
-	// leif = 'leif',
+	darrel = 'darrel',
+	leif = 'leif',
 	/* 奥村 */
+	odar = 'odar',
 	frid = 'frid', // 药师
 	alan = 'alan', // 磨坊主
 	hold = 'hold', // 奥斯布鲁克的裁缝
@@ -33,17 +34,23 @@ enum NpcName {
   通过输入其它npc的名字来切换对话的npc。（其实就是每次都对玩家的输入进行检测）
 */
 const call_npc = {
+	空气: NpcName.air,
+	/* 车队 */
 	维伦: NpcName.verren,
 	阿尔达: NpcName.alda,
-	扎多克: NpcName.zadok,
-	博恩: NpcName.bern,
-	空气: NpcName.air,
+	达罗: NpcName.darrel,
+	勒夫: NpcName.leif,
+	/* 奥村 */
+	奥达: NpcName.odar,
 	弗利德: NpcName.frid,
 	阿兰: NpcName.alan,
 	霍特: NpcName.hold,
 	博特: NpcName.bert,
 	里柯德: NpcName.rickerd,
-	杰巴尔: NpcName.jebar
+	杰巴尔: NpcName.jebar,
+	/* 布林 */
+	扎多克: NpcName.zadok,
+	博恩: NpcName.bern
 };
 
 /* 可以只提供npc 名字，程序会部分匹配 */

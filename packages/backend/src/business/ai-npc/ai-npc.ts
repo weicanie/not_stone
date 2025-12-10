@@ -58,8 +58,6 @@ class AINpc implements TAINpc {
 			relationship: `人际关系：${this.relationship}，社会关系：${this.specialRelationship.join('、')}`
 		};
 		messageDto.message = JSON.stringify(aiInput);
-		// 尝试更新npc列表
-		await this.aiNpcService.initAINpcData(this.game_archive_id, messageDto.archive.role);
 
 		const aiOutput = await this.aiNpcService.sendMessageToAI(messageDto, userInfo, this.npcName);
 		return aiOutput;

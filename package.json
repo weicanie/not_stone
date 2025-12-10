@@ -30,6 +30,7 @@
 		"prepare": "husky",
 		"dev": "concurrently --kill-others-on-fail --kill-timeout 30000 --prefix \"[{name}]\" --names \"backend,mcp-server,shared\" --prefix-colors \"blue,green,yellow\" \"cd packages/backend && npm run dev\" \"cd packages/mcp-server && npm run dev\" \"cd packages/shared && npm run dev\"",
 		"dev:b": "cd packages/backend && npm run dev",
+		"dev:s": "cd packages/shared && npm run dev",
 		"dev:lerna": "pnpm lerna run dev --stream",
 		"format": "prettier --write \"**/src/**/*.[ts,tsx,css]\" \"**/test/**/*.ts\"",
 		"lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
