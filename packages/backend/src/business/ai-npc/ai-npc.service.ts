@@ -127,6 +127,7 @@ export class AiNpcService {
 	 * @returns
 	 */
 	async getCurGameArchive(userInfo: UserInfoFromToken) {
+		console.log(userInfo);
 		const curArchiveId = await this.dbService.user.findFirst({
 			where: {
 				id: +userInfo.userId
@@ -136,8 +137,8 @@ export class AiNpcService {
 			}
 		});
 
-		if (!curArchiveId) {
-			throw Error('用户没有当前游戏档案');
+		if (!curArchiveId?.cur_game_archive_id) {
+			throw Error('您当前没有游戏档案');
 		}
 
 		return await this.dbService.game_archive.findFirst({
