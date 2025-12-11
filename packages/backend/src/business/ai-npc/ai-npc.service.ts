@@ -122,6 +122,45 @@ export class AiNpcService {
 	}
 
 	/**
+	 * 获取当前API端的游戏档案
+	 * @param userInfo
+	 * @returns
+	 */
+	async getCurGameArchive(userInfo: UserInfoFromToken) {
+		const curArchiveId = await this.dbService.user.findFirst({
+			where: {
+				id: +userInfo.userId
+			},
+			select: {
+				cur_game_archive_id: true
+			}
+		});
+
+		if (!curArchiveId) {
+			throw Error('用户没有当前游戏档案');
+		}
+
+		return await this.dbService.game_archive.findFirst({
+			where: {
+				id: curArchiveId.cur_game_archive_id!
+			}
+		});
+	}
+
+	/**
+	 * 获取用户的游戏档案列表
+	 * @param userInfo
+	 * @returns
+	 */
+	async getGameArchives(userInfo: UserInfoFromToken) {
+		return await this.dbService.game_archive.findMany({
+			where: {
+				user_id: +userInfo.userId
+			}
+		});
+	}
+
+	/**
 	 * 设置当前对话的npc
 	 */
 	async setCurAINpc(name: string, userInfo: UserInfoFromToken) {

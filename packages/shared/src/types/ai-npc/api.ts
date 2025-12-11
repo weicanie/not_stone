@@ -96,11 +96,21 @@ interface MessageSendDto<T = LLMCanUse> {
 	archive: SlelectedArchive;
 }
 
+interface GameArchive {
+	id: number;
+	name: string;
+	role_name: string;
+	user_id: number;
+	create_at: Date | null;
+	update_at: Date | null;
+}
+
 export {
 	ActionCode,
 	APIReturn,
 	cnNameToEnglish,
 	GameAction,
+	GameArchive,
 	LLMCanUse,
 	MessageSendDto,
 	SlelectedArchive,

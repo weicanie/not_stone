@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
 import {
 	APIReturn,
 	call_npc,
 	cnNameToEnglish,
+	GameArchive,
 	LLMCanUse,
 	ModAccountData,
 	NpcName,
@@ -11,7 +12,7 @@ import {
 	type UserInfoFromToken
 } from '@not_stone/shared';
 import { DbService } from '../../DB/db.service';
-import { RequireLogin, UserInfo } from '../../decorator';
+import { RequireLogin, Role, UserInfo } from '../../decorator';
 import { UserService } from '../user/user.service';
 import AINpc from './ai-npc';
 import { AiNpcService } from './ai-npc.service';
@@ -101,13 +102,13 @@ export class AiNpcController {
 	 * @return 存放于游戏端的用于和服务器通信的账号数据
 	 */
 	@Get('init-account')
+	@RequireLogin([Role.admin])
 	async initAccount(
 		@Query('username') username: string,
 		@Query('password') password: string,
 		@Query('archiveName') archiveName: string,
 		@Query('rolename') rolename: keyof typeof cnNameToEnglish,
-		@Query('llm_type') llm_type: LLMCanUse,
-		@Query('api_key') api_key: string
+		@Query('llm_type') llm_type: LLMCanUse
 	): Promise<ModAccountData> {
 		// 对所有参数进行URL解码
 		username = decodeURIComponent(username);
@@ -115,7 +116,6 @@ export class AiNpcController {
 		archiveName = decodeURIComponent(archiveName);
 		rolename = decodeURIComponent(rolename) as keyof typeof cnNameToEnglish;
 		llm_type = decodeURIComponent(llm_type) as LLMCanUse;
-		api_key = decodeURIComponent(api_key);
 		const userRole = cnNameToEnglish[rolename];
 		if (!userRole) {
 			throw Error(`角色${rolename as string}不存在`);
@@ -141,7 +141,7 @@ export class AiNpcController {
 		const data: ModAccountData = {
 			modelConfig: {
 				llm_type,
-				api_key
+				api_key: ''
 			},
 			archive: {
 				name: archiveName,
@@ -151,5 +151,62 @@ export class AiNpcController {
 		};
 
 		return data;
+	}
+
+	@Post('create_archive')
+	@RequireLogin()
+	async createArchive(
+		@Query('archiveName') archiveName: string,
+		@Query('roleName') rolename: keyof typeof cnNameToEnglish,
+		@Query('llm_type') llm_type: LLMCanUse,
+		@UserInfo() userInfo: UserInfoFromToken,
+		@Res({ passthrough: true }) res: any
+	) {
+		const userRole = cnNameToEnglish[rolename];
+		if (!userRole) {
+			throw Error(`角色${rolename as string}不存在`);
+		}
+
+		await this.aiNpcService.initGameArchiveData(archiveName, userRole, userInfo);
+
+		const data: ModAccountData = {
+			modelConfig: {
+				llm_type,
+				api_key: ''
+			},
+			archive: {
+				name: archiveName,
+				role: userRole
+			},
+			token: res.getHeader('token') as string
+		};
+
+		return data;
+	}
+
+	@Post('set_cur_archive')
+	@RequireLogin()
+	async setCurArchive(
+		@Query('archiveId') archiveId: string,
+		@UserInfo() userInfo: UserInfoFromToken
+	): Promise<string> {
+		await this.aiNpcService.setCurGameArchive(+archiveId, userInfo);
+		return '设置成功';
+	}
+
+	@Get('get_cur_archive')
+	@RequireLogin()
+	async getCurArchive(@UserInfo() userInfo: UserInfoFromToken): Promise<GameArchive> {
+		const archive = await this.aiNpcService.getCurGameArchive(userInfo);
+		if (!archive) {
+			throw Error('用户没有当前游戏档案');
+		}
+		return archive;
+	}
+
+	@Get('archives')
+	@RequireLogin()
+	async getArchives(@UserInfo() userInfo: UserInfoFromToken): Promise<GameArchive[]> {
+		return await this.aiNpcService.getGameArchives(userInfo);
 	}
 }
