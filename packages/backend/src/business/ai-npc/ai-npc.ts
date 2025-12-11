@@ -93,7 +93,7 @@ class AINpc implements TAINpc {
 			game_actions.push({
 				code: ActionCode.ChangeReputation,
 				cnt: influenceChange,
-				msg: `声望 ${influenceChange > 0 ? `你获得了${this.npcName}的认可，声望+${influenceChange}点。\n` : `你不受${this.npcName}待见，声望-${-influenceChange}点。\n`}${influenceChange}`
+				msg: `声望 ${influenceChange > 0 ? `你获得了${this.npcName}的认可，声望+了${influenceChange}。\n` : `你不受${this.npcName}待见，声望-了${-influenceChange}。\n`}`
 			});
 		}
 
@@ -101,7 +101,7 @@ class AINpc implements TAINpc {
 			game_actions.push({
 				code: ActionCode.AddExp,
 				cnt: expChange,
-				msg: `${this.npcName}和你分享了经历和见解，经验值增加了${expChange}点。\n`
+				msg: `${this.npcName}和你分享了经历和见解，经验值+${expChange}。\n`
 			});
 		}
 
