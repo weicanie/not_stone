@@ -127,7 +127,6 @@ export class AiNpcService {
 	 * @returns
 	 */
 	async getCurGameArchive(userInfo: UserInfoFromToken) {
-		console.log(userInfo);
 		const curArchiveId = await this.dbService.user.findFirst({
 			where: {
 				id: +userInfo.userId

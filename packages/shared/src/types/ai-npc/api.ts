@@ -66,12 +66,12 @@ const cnNameToEnglish = {
  */
 enum LLMCanUse {
 	// google
-	gemini_2_5_pro = 'gemini-2.5-pro',
-	gemini_2_5_pro_proxy = 'gemini-2.5-pro-proxy', //国内代理
+	// gemini_2_5_pro = 'gemini-2.5-pro',
+	// gemini_2_5_pro_proxy = 'gemini-2.5-pro-proxy',
 	gemini_2_5_flash = 'gemini-2.5-flash',
 	// deepseek
 	v3 = 'deepseek-chat',
-	r1 = 'deepseek-reasoner',
+	// r1 = 'deepseek-reasoner',
 	//zhipu
 	glm_4_6 = 'glm-4.6'
 }

@@ -8,7 +8,6 @@ import {
 	ModAccountData,
 	NpcName,
 	RelationshipTier,
-	SpecialRelationshipType,
 	type UserInfoFromToken
 } from '@not_stone/shared';
 import { DbService } from '../../DB/db.service';
@@ -90,7 +89,7 @@ export class AiNpcController {
 			aiNpcData.name as NpcName,
 			aiNpcData.relationshipValue,
 			aiNpcData.relationshipTier as RelationshipTier,
-			JSON.parse(aiNpcData.specialRelationship as string) as SpecialRelationshipType[]
+			JSON.parse(aiNpcData.specialRelationship as string) as string[]
 		);
 
 		const aiOutput = await aiNpc.talk(messageDto, userInfo);

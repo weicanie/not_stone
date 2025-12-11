@@ -2,9 +2,14 @@ interface TAINpc {
 	npcName: NpcName;
 	status: NpcStaus;
 	traits: TraitList[];
+	// 好感度 -100 ~ 100
 	relationshipValue: number;
 	relationship: RelationshipTier;
-	specialRelationship: SpecialRelationshipType[];
+	/* 社会关系 
+  玩家是npc的__，
+	这是玩家可以改变的关系
+*/
+	specialRelationship: string[];
 }
 
 enum NpcName {
@@ -15,16 +20,16 @@ enum NpcName {
 	darrel = 'darrel',
 	leif = 'leif',
 	/* 奥村 */
-	odar = 'odar',
+	odar = 'odar', // 村长
 	frid = 'frid', // 药师
 	alan = 'alan', // 磨坊主
-	hold = 'hold', // 奥斯布鲁克的裁缝
+	hold = 'hold', // 裁缝
 	bert = 'bert', // 生意人
 	rickerd = 'rickerd', // 布林特使
 	jebar = 'jebar', // 铁匠
 	/* 布林 */
-	zadok = 'zadok', // 布林港口酒鬼
-	bern = 'bern' // 布林老楼给介绍信的兵长
+	zadok = 'zadok', // 酒鬼
+	bern = 'bern' // 兵长
 }
 
 /* 对话npc流程
@@ -61,6 +66,91 @@ enum CaravanNpcKey {
 	// leif = 'leif'
 }
 
+/* npc好感度变化时，根据npc存在感应用到玩家的声望、金币和经验值
+	不同npc按其存在感（财富、影响力、经验）不同而导致不同数值的奖励或惩罚。
+	0 表示其无法影响。
+*/
+interface NpcExistenceMetaData {
+	wealth: number; // 财富 0 ~ 100
+	influence: number; // 影响力 0 ~ 100
+	exp: number; // 经验值 0 ~ 100
+}
+const npc_existence_meta_data: Record<NpcName, NpcExistenceMetaData> = {
+	[NpcName.air]: {
+		wealth: 0,
+		influence: 0,
+		exp: 0
+	},
+	/* 车队 */
+	[NpcName.verren]: {
+		wealth: 0,
+		influence: 0,
+		exp: 80
+	},
+	[NpcName.alda]: {
+		wealth: 0,
+		influence: 0,
+		exp: 50
+	},
+	[NpcName.darrel]: {
+		wealth: 30,
+		influence: 0,
+		exp: 20
+	},
+	[NpcName.leif]: {
+		wealth: 0,
+		influence: 0,
+		exp: 90
+	},
+	/* 奥村 */
+	[NpcName.odar]: {
+		wealth: 0,
+		influence: 90,
+		exp: 0
+	},
+	[NpcName.alan]: {
+		wealth: 0,
+		influence: 80,
+		exp: 0
+	},
+	[NpcName.frid]: {
+		wealth: 20,
+		influence: 50,
+		exp: 0
+	},
+	[NpcName.hold]: {
+		wealth: 30,
+		influence: 30,
+		exp: 0
+	},
+	[NpcName.bert]: {
+		wealth: 50,
+		influence: 0,
+		exp: 10
+	},
+	[NpcName.rickerd]: {
+		wealth: 80,
+		influence: 50,
+		exp: 0
+	},
+	[NpcName.jebar]: {
+		wealth: 20,
+		influence: 40,
+		exp: 0
+	},
+	/* 布林 */
+	[NpcName.zadok]: {
+		wealth: 0,
+		influence: 0,
+		exp: 0
+	},
+	[NpcName.bern]: {
+		wealth: 60,
+		influence: 95,
+		exp: 80
+	}
+};
+
 /* 特质系统
   特质是npc个性的概括，目前仅影响对话。
 */
@@ -89,25 +179,13 @@ enum RelationshipTier {
 
 /* 设定关系游戏已经给出，玩家无法改变，合伙、雇佣和被雇佣... */
 
-/* 发展中的关系 
-  玩家是npc的__，
-	这是玩家可以改变的关系
-*/
-enum SpecialRelationshipType {
-	lover = 'lover', // 恋人
-	parent = 'parent', // 父或母
-	child = 'child', // 子或女
-	brother = 'brother', // 兄弟
-	sister = 'sister' // 姐妹
-}
-
 export {
 	call_npc,
 	CaravanNpcKey,
+	npc_existence_meta_data,
 	NpcName,
 	NpcStaus,
 	RelationshipTier,
-	SpecialRelationshipType,
 	TAINpc,
 	TraitList
 };

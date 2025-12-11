@@ -1,14 +1,14 @@
 import {
-	APIReturn,
 	ActionCode,
+	APIReturn,
 	GameAction,
 	MessageSendDto,
+	npc_existence_meta_data,
 	NpcAIInput,
 	NpcAIOutput,
 	NpcName,
 	NpcStaus,
 	RelationshipTier,
-	SpecialRelationshipType,
 	TAINpc,
 	TraitList,
 	UserInfoFromToken
@@ -24,7 +24,7 @@ class AINpc implements TAINpc {
 	traits: TraitList[];
 	relationshipValue: number;
 	relationship: RelationshipTier;
-	specialRelationship: SpecialRelationshipType[];
+	specialRelationship: string[];
 
 	aiNpcService: AiNpcService;
 
@@ -34,7 +34,7 @@ class AINpc implements TAINpc {
 		npcName: NpcName,
 		relationshipValue: number,
 		relationship: RelationshipTier,
-		specialRelationship: SpecialRelationshipType[],
+		specialRelationship: string[],
 		status: NpcStaus = NpcStaus.normal,
 		traits: TraitList[] = []
 	) {
@@ -62,6 +62,52 @@ class AINpc implements TAINpc {
 		const aiOutput = await this.aiNpcService.sendMessageToAI(messageDto, userInfo, this.npcName);
 		return aiOutput;
 	}
+
+	/**
+	 * 好感度等级变化时，根据存在感应用到玩家的声望、金币、经验值。
+	 * 数值 = (当前好感度 * npc该值的存在感数值) / 100，向下取整
+	 *
+	 */
+	async applyRelationshipChangeToPlayer(relationshipChange: number) {
+		const metaData = npc_existence_meta_data[this.npcName];
+		if (!metaData) {
+			return [];
+		}
+
+		// 数值 = (好感度变化值 * npc该值的存在感数值) / 100，向下取整
+		const wealthChange = Math.floor((relationshipChange * metaData.wealth) / 100);
+		const influenceChange = Math.floor((relationshipChange * metaData.influence) / 100);
+		const expChange = Math.floor((relationshipChange * metaData.exp) / 100);
+
+		const game_actions: GameAction[] = [];
+
+		if (wealthChange > 0) {
+			game_actions.push({
+				code: ActionCode.AddGold,
+				cnt: wealthChange,
+				msg: `${this.npcName}被你打动，资助了你${wealthChange}冠。\n`
+			});
+		}
+
+		if (influenceChange !== 0) {
+			game_actions.push({
+				code: ActionCode.ChangeReputation,
+				cnt: influenceChange,
+				msg: `声望 ${influenceChange > 0 ? `你获得了${this.npcName}的认可，声望+${influenceChange}点。\n` : `你不受${this.npcName}待见，声望-${-influenceChange}点。\n`}${influenceChange}`
+			});
+		}
+
+		if (expChange > 0) {
+			game_actions.push({
+				code: ActionCode.AddExp,
+				cnt: expChange,
+				msg: `${this.npcName}和你分享了经历和见解，经验值增加了${expChange}点。\n`
+			});
+		}
+
+		return game_actions;
+	}
+
 	/**
 	 * 将ai返回的操作应用到数据库，并转为返回给游戏程序的格式
 	 */
@@ -78,7 +124,12 @@ class AINpc implements TAINpc {
 				switch (code) {
 					case ActionCode.ChangeRelationshipValue:
 						{
-							const change = action.cnt || 0;
+							const rawChange = action.cnt || 0;
+							// 使得绝对值越高的好感度变化幅度越小
+							// 阻尼系数：(150 - |当前好感度|) / 150。当好感度为0时系数为1，为100时系数为0.33
+							const dampingFactor = Math.max(0.2, (150 - Math.abs(this.relationshipValue)) / 150);
+							const change = Math.ceil(rawChange * dampingFactor);
+
 							this.relationshipValue += change;
 							relationshipChange += change;
 
@@ -105,17 +156,11 @@ class AINpc implements TAINpc {
 						{
 							if (action.rels) {
 								for (const rel of action.rels) {
-									// 检验关系类型是否在声明的集合中
-									if (
-										Object.values(SpecialRelationshipType).includes(rel as SpecialRelationshipType)
-									) {
-										if (!this.specialRelationship.includes(rel as SpecialRelationshipType)) {
-											this.specialRelationship.push(rel as SpecialRelationshipType);
-										}
+									if (!this.specialRelationship.includes(rel)) {
+										this.specialRelationship.push(rel);
+										mod_action_msg += `关系建立: ${action.rels.join(', ')}\n`;
 									}
 								}
-
-								mod_action_msg += `关系建立: ${action.rels.join(', ')}\n`;
 							}
 						}
 						break;
@@ -148,6 +193,13 @@ class AINpc implements TAINpc {
 				}
 			});
 		}
+
+		// 应用好感度变化带来的额外影响
+		if (relationshipChange !== 0) {
+			const game_actions = await this.applyRelationshipChangeToPlayer(relationshipChange);
+			game_action.push(...game_actions);
+		}
+
 		// 返回回复和需要在游戏程序中进行的数据操作
 		return {
 			msg: aiOutput.reply,
