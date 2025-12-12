@@ -92,6 +92,7 @@ interface SlelectedArchive {
 
 interface MessageSendDto<T = LLMCanUse> {
 	message: string;
+	npcCall: string; // 当前对话npc的名称（游戏语言为中文则为其中文名）
 	modelConfig: UserModelConfig<T>;
 	archive: SlelectedArchive;
 }

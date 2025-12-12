@@ -24,6 +24,10 @@ export class MessageSendDto {
 	@IsString()
 	message: string;
 
+	@MaxLength(100)
+	@IsString()
+	npcCall: string; // 当前对话npc的名称（游戏语言为中文则为其中文名）
+
 	@IsObject()
 	modelConfig: UserModelConfigDto;
 

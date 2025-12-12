@@ -6,6 +6,7 @@ import {
 	GameArchive,
 	LLMCanUse,
 	ModAccountData,
+	npc_existence_meta_data,
 	NpcName,
 	RelationshipTier,
 	type UserInfoFromToken
@@ -25,6 +26,26 @@ export class AiNpcController {
 		private readonly userService: UserService
 	) {}
 
+	async getNpcName(userInput: string, npcCall: string, userInfo: UserInfoFromToken) {
+		// 先尝试直接将npcCall转换为英文;
+		if (call_npc[npcCall]) {
+			await this.aiNpcService.setCurAINpc(call_npc[npcCall], userInfo);
+			return call_npc[npcCall] as NpcName;
+		} else {
+			// 否则回退到用户输入控制
+			let curNpcName = '';
+			// 如果对话以某个npc名字开头，就将该npc设置为用户当前对话的npc
+			const npcCalls = [...Object.keys(call_npc)];
+			for (const call of npcCalls) {
+				if (userInput.trim().startsWith(call)) {
+					await this.aiNpcService.setCurAINpc(call_npc[call], userInfo);
+					curNpcName = call_npc[call];
+				}
+			}
+			return curNpcName as NpcName;
+		}
+	}
+
 	@Post('send')
 	@RequireLogin()
 	async sendMessageToAINpc(
@@ -37,16 +58,10 @@ export class AiNpcController {
 
 		const userInput = message;
 
-		// 如果对话以某个npc名字开头，就将该npc设置为用户当前对话的npc
-		let curNpcName = '';
-		const npcCalls = [...Object.keys(call_npc)];
-		for (const call of npcCalls) {
-			if (userInput.trim().startsWith(call)) {
-				await this.aiNpcService.setCurAINpc(call_npc[call], userInfo);
-				curNpcName = call_npc[call];
-			}
-		}
-		// 否则查询用户当前对话的npc
+		// 获取npc名称
+		let curNpcName = await this.getNpcName(userInput, messageDto.npcCall, userInfo);
+
+		// 获取npc名称失败则查询用户当前对话的npc
 		if (!curNpcName) {
 			const user = await this.dbService.user.findFirst({
 				where: {
@@ -56,7 +71,7 @@ export class AiNpcController {
 					cur_ai_npc_name: true
 				}
 			});
-			curNpcName = user?.cur_ai_npc_name || call_npc['空气']; // 如果用户没有指定npc，默认对话空气
+			curNpcName = (user?.cur_ai_npc_name as NpcName) || call_npc['空气']; // 如果用户没有指定npc，默认对话空气
 		}
 
 		if (curNpcName === NpcName.air) {
@@ -82,6 +97,20 @@ export class AiNpcController {
 			throw Error(`档案${gameArchiveId}里没有${curNpcName}的记录`);
 		}
 
+		const personality_trend =
+			(
+				await this.aiNpcService.dbService.game_archive.findFirst({
+					where: {
+						id: gameArchiveId
+					},
+					select: {
+						personality_trend: true
+					}
+				})
+			)?.personality_trend || 0;
+
+		const metaData = npc_existence_meta_data[aiNpcData.name as NpcName];
+
 		// 调用ai npc
 		const aiNpc = new AINpc(
 			this.aiNpcService,
@@ -89,7 +118,9 @@ export class AiNpcController {
 			aiNpcData.name as NpcName,
 			aiNpcData.relationshipValue,
 			aiNpcData.relationshipTier as RelationshipTier,
-			JSON.parse(aiNpcData.specialRelationship as string) as string[]
+			JSON.parse(aiNpcData.specialRelationship as string) as string[],
+			personality_trend,
+			metaData
 		);
 
 		const aiOutput = await aiNpc.talk(messageDto, userInfo);
