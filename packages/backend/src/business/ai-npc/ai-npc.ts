@@ -6,8 +6,10 @@ import {
 	npc_existence_meta_data,
 	NpcAIInput,
 	NpcAIOutput,
+	NpcExistenceMetaData,
 	NpcName,
 	NpcStaus,
+	PersonalityType,
 	RelationshipTier,
 	TAINpc,
 	TraitList,
@@ -25,6 +27,8 @@ class AINpc implements TAINpc {
 	relationshipValue: number;
 	relationship: RelationshipTier;
 	specialRelationship: string[];
+	personality_trend: number;
+	metadata: NpcExistenceMetaData;
 
 	aiNpcService: AiNpcService;
 
@@ -35,6 +39,8 @@ class AINpc implements TAINpc {
 		relationshipValue: number,
 		relationship: RelationshipTier,
 		specialRelationship: string[],
+		personality_trend: number,
+		metadata: NpcExistenceMetaData,
 		status: NpcStaus = NpcStaus.normal,
 		traits: TraitList[] = []
 	) {
@@ -46,6 +52,23 @@ class AINpc implements TAINpc {
 		this.relationshipValue = relationshipValue;
 		this.relationship = relationship;
 		this.specialRelationship = specialRelationship;
+		this.personality_trend = personality_trend;
+		this.metadata = metadata;
+	}
+
+	async saveNpcToDB() {
+		// 将数据更新到数据库
+		await this.aiNpcService.dbService.ai_npc.updateMany({
+			where: {
+				game_archive_id: this.game_archive_id,
+				name: this.npcName
+			},
+			data: {
+				relationshipValue: this.relationshipValue,
+				relationshipTier: this.relationship,
+				specialRelationship: JSON.stringify(this.specialRelationship)
+			}
+		});
 	}
 
 	/**
@@ -65,7 +88,7 @@ class AINpc implements TAINpc {
 
 	/**
 	 * 好感度等级变化时，根据存在感应用到玩家的声望、金币、经验值。
-	 * 数值 = (当前好感度 * npc该值的存在感数值) / 100，向下取整
+	 * 数值 = (好感度变化值 * npc该值的存在感数值) / 100，向下取整
 	 *
 	 */
 	async applyRelationshipChangeToPlayer(relationshipChange: number) {
@@ -75,9 +98,9 @@ class AINpc implements TAINpc {
 		}
 
 		// 数值 = (好感度变化值 * npc该值的存在感数值) / 100，向下取整
-		const wealthChange = Math.floor((relationshipChange * metaData.wealth) / 100);
-		const influenceChange = Math.floor((relationshipChange * metaData.influence) / 100);
-		const expChange = Math.floor((relationshipChange * metaData.exp) / 100);
+		const wealthChange = Math.floor((relationshipChange * metaData.wealth * 4) / 100);
+		const influenceChange = Math.floor((relationshipChange * metaData.influence * 5) / 100);
+		const expChange = Math.floor((relationshipChange * metaData.exp * 10) / 100);
 
 		const game_actions: GameAction[] = [];
 
@@ -88,12 +111,12 @@ class AINpc implements TAINpc {
 				msg: `${this.npcName}被你打动，资助了你${wealthChange}冠。\n`
 			});
 		}
-
+		// 人格倾向应用于变化
 		if (influenceChange !== 0) {
 			game_actions.push({
 				code: ActionCode.ChangeReputation,
-				cnt: influenceChange,
-				msg: `声望 ${influenceChange > 0 ? `你获得了${this.npcName}的认可，声望+了${influenceChange}。\n` : `你不受${this.npcName}待见，声望-了${-influenceChange}。\n`}`
+				cnt: influenceChange > 0 ? influenceChange + this.personality_trend : 0,
+				msg: `${influenceChange > 0 ? `这获得了认可，${this.personality_trend > 0 ? '蒸蒸日上啊，' : ''}当地声望+${influenceChange}。\n` : `这不受待见，${this.personality_trend > 0 ? '' : '去他的吧，'}当地声望-${-influenceChange}。\n`}`
 			});
 		}
 
@@ -106,6 +129,44 @@ class AINpc implements TAINpc {
 		}
 
 		return game_actions;
+	}
+
+	/**
+	 * 好感度变化时，应用到玩家角色的人格倾向
+	 */
+	async applyRelationshipChangeToPlayerPersonalityTrend(
+		relationshipChange: number,
+		mod_action_msg: string
+	) {
+		if (
+			relationshipChange === 0 ||
+			this.metadata.personality_type === PersonalityType.normal ||
+			this.metadata.personality_trend === 0
+		) {
+			return mod_action_msg;
+		} else {
+			// 更新玩家角色的人格倾向
+			let change =
+				(relationshipChange *
+					this.metadata.personality_trend *
+					(this.metadata.personality_type === PersonalityType.vile ? -1 : 1)) /
+				100;
+			change = change > 0 ? Math.min(change, 3) : Math.max(change, -3);
+			this.personality_trend = this.personality_trend + change;
+
+			await this.aiNpcService.dbService.game_archive.updateMany({
+				where: {
+					id: this.game_archive_id
+				},
+				data: {
+					personality_trend: this.personality_trend
+				}
+			});
+
+			// mod_action_msg += `人格倾向 ${change > 0 ? '+' : '-'} ${Math.abs(change)}（${this.personality_trend}）\n`;
+			mod_action_msg += `${change > 0 ? `与${this.npcName}这样的人亲近了\n` : `与${this.npcName}这样的人疏远了\n`}`;
+			return mod_action_msg;
+		}
 	}
 
 	/**
@@ -128,7 +189,23 @@ class AINpc implements TAINpc {
 							// 使得绝对值越高的好感度变化幅度越小
 							// 阻尼系数：(150 - |当前好感度|) / 150。当好感度为0时系数为1，为100时系数为0.33
 							const dampingFactor = Math.max(0.2, (150 - Math.abs(this.relationshipValue)) / 150);
-							const change = Math.ceil(rawChange * dampingFactor);
+							let change = Math.max(Math.ceil(rawChange * dampingFactor), 5);
+
+							// 人格魅力影响：负值容易与小人交好，正值容易与普通人、君子交好（物以类聚人以群分）
+							if (this.metadata.personality_type === PersonalityType.vile && change !== 0) {
+								if (this.personality_trend < 0) {
+									change = change + 1;
+								} else {
+									change = change - 1;
+								}
+							}
+							if (this.metadata.personality_type === PersonalityType.noble && change !== 0) {
+								if (this.personality_trend >= 0) {
+									change = change + 1;
+								} else {
+									change = change - 1;
+								}
+							}
 
 							this.relationshipValue += change;
 							relationshipChange += change;
@@ -149,7 +226,7 @@ class AINpc implements TAINpc {
 								this.relationship = RelationshipTier.hostile;
 							}
 
-							mod_action_msg += `好感度变为${this.relationshipValue}（${this.relationship}）\n`;
+							mod_action_msg += `好感度${change > 0 ? '+' : '-'} ${Math.abs(change)}（${this.relationshipValue}，${this.relationship}）\n`;
 						}
 						break;
 					case ActionCode.addSpecialRelationship:
@@ -181,23 +258,21 @@ class AINpc implements TAINpc {
 			}
 
 			// 将数据更新到数据库
-			await this.aiNpcService.dbService.ai_npc.updateMany({
-				where: {
-					game_archive_id: this.game_archive_id,
-					name: this.npcName
-				},
-				data: {
-					relationshipValue: this.relationshipValue,
-					relationshipTier: this.relationship,
-					specialRelationship: JSON.stringify(this.specialRelationship)
-				}
-			});
+			await this.saveNpcToDB();
 		}
 
 		// 应用好感度变化带来的额外影响
 		if (relationshipChange !== 0) {
 			const game_actions = await this.applyRelationshipChangeToPlayer(relationshipChange);
 			game_action.push(...game_actions);
+		}
+
+		// 应用好感度变化到玩家角色人格魅力
+		if (relationshipChange !== 0) {
+			mod_action_msg = await this.applyRelationshipChangeToPlayerPersonalityTrend(
+				relationshipChange,
+				mod_action_msg
+			);
 		}
 
 		// 返回回复和需要在游戏程序中进行的数据操作

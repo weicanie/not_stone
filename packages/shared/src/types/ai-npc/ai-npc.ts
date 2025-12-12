@@ -8,8 +8,16 @@ interface TAINpc {
 	/* 社会关系 
   玩家是npc的__，
 	这是玩家可以改变的关系
-*/
+	*/
 	specialRelationship: string[];
+	/* 玩家角色的人格倾向值（善恶倾向）
+		近朱者赤近墨者黑，小人好感度增加就-，和君子好感度增加就+。
+	用于
+		1、当地声望变化时，>0声望增加更多
+		2、< 0 更容易和小人交好，> 0 更容易和君子交好。
+	*/
+	personality_trend: number;
+	metadata: NpcExistenceMetaData;
 }
 
 enum NpcName {
@@ -65,89 +73,131 @@ enum CaravanNpcKey {
 	// darrel = 'darrel',
 	// leif = 'leif'
 }
-
-/* npc好感度变化时，根据npc存在感应用到玩家的声望、金币和经验值
+/**
+ * npc对玩家角色的人格倾向影响方向
+ */
+enum PersonalityType {
+	/* 恶 */
+	vile = 'vile',
+	/* 善 */
+	noble = 'noble',
+	/* 中立 */
+	normal = 'normal'
+}
+/* npc存在感表示对玩家与游戏世界的改变方向与能力
+	npc好感度变化时，根据npc存在感应用到玩家的声望、金币和经验值
 	不同npc按其存在感（财富、影响力、经验）不同而导致不同数值的奖励或惩罚。
 	0 表示其无法影响。
 */
 interface NpcExistenceMetaData {
-	wealth: number; // 财富 0 ~ 100
-	influence: number; // 影响力 0 ~ 100
-	exp: number; // 经验值 0 ~ 100
+	wealth: number; // 对财富 0 ~ 100
+	influence: number; // 对当地声望 0 ~ 100
+	exp: number; // 对经验值 0 ~ 100
+	/* 对人格倾向值 */
+	personality_trend: number; //数值
+	personality_type: PersonalityType; //方向
 }
 const npc_existence_meta_data: Record<NpcName, NpcExistenceMetaData> = {
 	[NpcName.air]: {
 		wealth: 0,
 		influence: 0,
-		exp: 0
+		exp: 0,
+		personality_trend: 0,
+		personality_type: PersonalityType.normal
 	},
 	/* 车队 */
 	[NpcName.verren]: {
 		wealth: 0,
 		influence: 0,
-		exp: 80
+		exp: 80,
+		personality_trend: 0,
+		personality_type: PersonalityType.normal
 	},
 	[NpcName.alda]: {
 		wealth: 0,
 		influence: 0,
-		exp: 50
+		exp: 50,
+		personality_trend: 30,
+		personality_type: PersonalityType.noble
 	},
 	[NpcName.darrel]: {
 		wealth: 30,
 		influence: 0,
-		exp: 20
+		exp: 20,
+		personality_trend: 30,
+		personality_type: PersonalityType.noble
 	},
 	[NpcName.leif]: {
 		wealth: 0,
 		influence: 0,
-		exp: 90
+		exp: 90,
+		personality_trend: 0,
+		personality_type: PersonalityType.normal
 	},
 	/* 奥村 */
 	[NpcName.odar]: {
-		wealth: 0,
+		wealth: 50,
 		influence: 90,
-		exp: 0
+		exp: 0,
+		personality_trend: 50,
+		personality_type: PersonalityType.vile
 	},
 	[NpcName.alan]: {
 		wealth: 0,
 		influence: 80,
-		exp: 0
+		exp: 0,
+		personality_trend: 0,
+		personality_type: PersonalityType.normal
 	},
 	[NpcName.frid]: {
 		wealth: 20,
 		influence: 50,
-		exp: 0
+		exp: 0,
+		personality_trend: 30,
+		personality_type: PersonalityType.noble
 	},
 	[NpcName.hold]: {
 		wealth: 30,
 		influence: 30,
-		exp: 0
+		exp: 0,
+		personality_trend: 0,
+		personality_type: PersonalityType.normal
 	},
 	[NpcName.bert]: {
 		wealth: 50,
 		influence: 0,
-		exp: 10
+		exp: 10,
+		personality_trend: 0,
+		personality_type: PersonalityType.normal
 	},
 	[NpcName.rickerd]: {
 		wealth: 80,
-		influence: 50,
-		exp: 0
+		influence: -50,
+		exp: 0,
+		personality_trend: 20,
+		personality_type: PersonalityType.vile
 	},
 	[NpcName.jebar]: {
 		wealth: 20,
 		influence: 40,
-		exp: 0
+		exp: 0,
+		personality_trend: 0,
+		personality_type: PersonalityType.normal
 	},
 	/* 布林 */
 	[NpcName.zadok]: {
 		wealth: 0,
 		influence: 0,
-		exp: 0
+		exp: 0,
+		personality_trend: 0,
+		personality_type: PersonalityType.normal
 	},
 	[NpcName.bern]: {
 		wealth: 60,
 		influence: 95,
-		exp: 80
+		exp: 80,
+		personality_trend: 0,
+		personality_type: PersonalityType.normal
 	}
 };
 
@@ -183,8 +233,10 @@ export {
 	call_npc,
 	CaravanNpcKey,
 	npc_existence_meta_data,
+	NpcExistenceMetaData,
 	NpcName,
 	NpcStaus,
+	PersonalityType,
 	RelationshipTier,
 	TAINpc,
 	TraitList
