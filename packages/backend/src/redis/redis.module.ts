@@ -29,7 +29,6 @@ import { RedisService } from './redis.service';
 					logger.log('redis数据库连接成功', 'RedisModule');
 				} catch (error) {
 					logger.error('redis数据库连接失败', error);
-					throw error;
 				}
 				return client;
 			}
