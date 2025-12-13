@@ -108,29 +108,29 @@ const npc_existence_meta_data: Record<NpcName, NpcExistenceMetaData> = {
 	/* 车队 */
 	[NpcName.verren]: {
 		wealth: 0,
-		influence: 0,
-		exp: 80,
+		influence: 30,
+		exp: 0,
 		personality_trend: 0,
 		personality_type: PersonalityType.normal
 	},
 	[NpcName.alda]: {
-		wealth: 0,
+		wealth: 20,
 		influence: 0,
-		exp: 50,
+		exp: 0,
 		personality_trend: 30,
 		personality_type: PersonalityType.noble
 	},
 	[NpcName.darrel]: {
 		wealth: 30,
 		influence: 0,
-		exp: 20,
+		exp: 0,
 		personality_trend: 30,
 		personality_type: PersonalityType.noble
 	},
 	[NpcName.leif]: {
 		wealth: 0,
-		influence: 0,
-		exp: 90,
+		influence: 20,
+		exp: 0,
 		personality_trend: 0,
 		personality_type: PersonalityType.normal
 	},
@@ -143,7 +143,7 @@ const npc_existence_meta_data: Record<NpcName, NpcExistenceMetaData> = {
 		personality_type: PersonalityType.vile
 	},
 	[NpcName.alan]: {
-		wealth: 0,
+		wealth: 20,
 		influence: 80,
 		exp: 0,
 		personality_trend: 0,
@@ -165,14 +165,14 @@ const npc_existence_meta_data: Record<NpcName, NpcExistenceMetaData> = {
 	},
 	[NpcName.bert]: {
 		wealth: 50,
-		influence: 0,
-		exp: 10,
+		influence: 20,
+		exp: 0,
 		personality_trend: 0,
 		personality_type: PersonalityType.normal
 	},
 	[NpcName.rickerd]: {
 		wealth: 80,
-		influence: -50,
+		influence: -80,
 		exp: 0,
 		personality_trend: 20,
 		personality_type: PersonalityType.vile
@@ -194,8 +194,8 @@ const npc_existence_meta_data: Record<NpcName, NpcExistenceMetaData> = {
 	},
 	[NpcName.bern]: {
 		wealth: 60,
-		influence: 95,
-		exp: 80,
+		influence: 90,
+		exp: 0,
 		personality_trend: 0,
 		personality_type: PersonalityType.normal
 	}

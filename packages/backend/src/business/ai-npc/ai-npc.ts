@@ -98,19 +98,22 @@ class AINpc implements TAINpc {
 		}
 
 		// 数值 = (好感度变化值 * npc该值的存在感数值) / 100，向下取整
-		const wealthChange = Math.floor((relationshipChange * metaData.wealth * 4) / 100);
+		const wealthChange = Math.floor((relationshipChange * metaData.wealth * 8) / 100);
 		const influenceChange = Math.floor((relationshipChange * metaData.influence * 5) / 100);
-		const expChange = Math.floor((relationshipChange * metaData.exp * 10) / 100);
+		// 禁用好感度产生的经验值变化，太破坏游戏体验
+		// const expChange = Math.floor((relationshipChange * metaData.exp * 10) / 100) ;
 
 		const game_actions: GameAction[] = [];
 
-		if (wealthChange > 0) {
+		// 好感度达到50以上时，才会资助玩家
+		if (wealthChange > 0 && this.relationshipValue > 50) {
 			game_actions.push({
 				code: ActionCode.AddGold,
 				cnt: wealthChange,
 				msg: `${this.npcName}被你打动，资助了你${wealthChange}冠。\n`
 			});
 		}
+
 		// 人格倾向应用于变化
 		if (influenceChange !== 0) {
 			game_actions.push({
@@ -120,13 +123,13 @@ class AINpc implements TAINpc {
 			});
 		}
 
-		if (expChange > 0) {
-			game_actions.push({
-				code: ActionCode.AddExp,
-				cnt: expChange,
-				msg: `${this.npcName}和你分享了经历和见解，经验值+${expChange}。\n`
-			});
-		}
+		// if (expChange > 0) {
+		// 	game_actions.push({
+		// 		code: ActionCode.AddExp,
+		// 		cnt: expChange,
+		// 		msg: `${this.npcName}和你分享了经历和见解，经验值+${expChange}。\n`
+		// 	});
+		// }
 
 		return game_actions;
 	}
@@ -164,7 +167,6 @@ class AINpc implements TAINpc {
 			});
 
 			// mod_action_msg += `人格倾向 ${change > 0 ? '+' : '-'} ${Math.abs(change)}（${this.personality_trend}）\n`;
-			mod_action_msg += `${change > 0 ? `与${this.npcName}这样的人亲近了\n` : `与${this.npcName}这样的人疏远了\n`}`;
 			return mod_action_msg;
 		}
 	}
