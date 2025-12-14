@@ -3,27 +3,29 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
 	call_npc,
 	MessageSendDto,
+	NpcAIOutput,
 	NpcName,
 	RelationshipTier,
+	TargetList,
+	TTarget,
 	UserInfoFromToken
 } from '@not_stone/shared';
 import { AichatChainService } from '../../chain/aichat-chain.service';
-import { ChainService } from '../../chain/chain.service';
 import { DbService } from '../../DB/db.service';
-import { UserRole } from './constants';
+import { name_init_target, UserRole } from './constants';
 
 @Injectable()
 export class AiNpcService {
 	constructor(
 		public dbService: DbService,
-		public chainService: ChainService,
 		public aichatChainService: AichatChainService
 	) {}
 
 	private logger = new Logger();
 
 	/**
-	 * 初始化API端的游戏档案，包含ai npc、任务等信息
+	 * 初始化API端的游戏档案，包含ai npc、任务等信息。
+	 * 已存在则直接返回档案id。
 	 * @param name 档案名称
 	 * @param role 扮演的角色
 	 * @param userInfo
@@ -48,8 +50,8 @@ export class AiNpcService {
 			});
 			// 初始化ai npc
 			await this.initAINpcData(newArchive.id, role);
-			// 初始化任务
-			await this.initTasks();
+			// 初始化目标
+			await this.initTargetData(newArchive.id);
 			// 设置当前API端的游戏档案
 			await this.setCurGameArchive(newArchive.id, userInfo);
 			return newArchive.id;
@@ -102,8 +104,32 @@ export class AiNpcService {
 		}
 	}
 
-	//TODO
-	async initTasks() {}
+	async initTargetData(archiveId: number) {
+		for (const target of Object.values(TargetList)) {
+			// 如果已存在则不创建
+			const existing = await this.dbService.play_target.findFirst({
+				where: {
+					game_archive_id: archiveId,
+					name: target
+				}
+			});
+			if (existing) {
+				continue;
+			} else {
+				const init = name_init_target[target];
+				await this.dbService.play_target.create({
+					data: {
+						game_archive_id: archiveId,
+						name: init.name,
+						icon: init.icon,
+						descTxt: init.descTxt,
+						descMd: init.descMd,
+						done: false
+					}
+				});
+			}
+		}
+	}
 
 	/**
 	 * 设置当前API端的游戏档案
@@ -218,11 +244,33 @@ export class AiNpcService {
 				role,
 				false
 			);
-			const answer = await (chain as RunnableSequence).invoke({ input: userInput });
+			const answer: NpcAIOutput = await (chain as RunnableSequence).invoke({ input: userInput });
 			return answer;
 		} catch (error) {
 			this.logger.error(error.stack);
 			throw error;
 		}
+	}
+
+	/**
+	 *  保存目标数据到数据库
+	 */
+	async saveTargetToDB(archiveId: number, target: TTarget) {
+		const cleanTarget = {
+			name: target.name,
+			done: target.done,
+			icon: target.icon,
+			descMd: target.descMd,
+			descTxt: target.descTxt
+		};
+		await this.dbService.play_target.updateMany({
+			where: {
+				game_archive_id: archiveId,
+				name: target.name
+			},
+			data: {
+				...cleanTarget
+			}
+		});
 	}
 }

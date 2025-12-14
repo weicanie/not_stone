@@ -1,4 +1,4 @@
-import { NpcName, TAINpc } from './ai-npc';
+import { NpcName } from './ai-npc';
 import { ActionCode } from './api';
 
 enum TaskStatus {
@@ -27,17 +27,14 @@ interface TaskStep {
 
 /* 任务系统
   任务都是对话和检定驱动的。
-  当触发某一任务后，相关的npc全变为任务中状态，不再接受一般的对话，直到任务完成（表现为出现时直接向玩家角色提问）。
+  当触发某一任务后，相关的npc全变为任务中状态，不再接受一般的对话，直到任务完成。
 */
-enum TaskList {
-	shadowInBrynn = 'shadowInBrynn', // 布林的阴影
-	chooseOfForestGuard = 'chooseOfForestGuard' // 护林员的选择
-}
+enum TaskList {}
 
 interface TTask {
 	taskName: TaskList;
 	status: TaskStatus;
-	npcs: TAINpc[]; // 任务中涉及的npc
+	npcs: NpcName[]; // 任务中涉及的npc
 	steps: TaskStep[]; // 任务的步骤
 	currentStep: number; // 当前进行到的步骤
 }

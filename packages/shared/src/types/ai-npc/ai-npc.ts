@@ -1,5 +1,7 @@
 interface TAINpc {
+	game_archive_id: number;
 	npcName: NpcName;
+	userRoleName: string;
 	status: NpcStaus;
 	traits: TraitList[];
 	// 好感度 -100 ~ 100
@@ -18,6 +20,18 @@ interface TAINpc {
 	*/
 	personality_trend: number;
 	metadata: NpcExistenceMetaData;
+	gift_given: boolean; // 是否已赠礼（用于初次成为好友时赠礼）
+
+	/**
+	 * 将npc数据保存到数据库
+	 */
+	saveNpcToDB: () => Promise<void>;
+	/**
+	 * 将用户角色数据保存到数据库
+	 */
+	saveUserRoleToDB: () => Promise<void>;
+
+	aiNpcService: any;
 }
 
 enum NpcName {
@@ -84,6 +98,13 @@ enum PersonalityType {
 	/* 中立 */
 	normal = 'normal'
 }
+enum GiftType {
+	none = 'none',
+	food = 'food',
+	skillBook_1 = 'skillBook_1',
+	equipment_0 = 'equipment_0',
+	jewelry = 'jewelry'
+}
 /* npc存在感表示对玩家与游戏世界的改变方向与能力
 	npc好感度变化时，根据npc存在感应用到玩家的声望、金币和经验值
 	不同npc按其存在感（财富、影响力、经验）不同而导致不同数值的奖励或惩罚。
@@ -96,6 +117,8 @@ interface NpcExistenceMetaData {
 	/* 对人格倾向值 */
 	personality_trend: number; //数值
 	personality_type: PersonalityType; //方向
+	/* 礼物类型 */
+	gift_type: GiftType;
 }
 const npc_existence_meta_data: Record<NpcName, NpcExistenceMetaData> = {
 	[NpcName.air]: {
@@ -103,7 +126,8 @@ const npc_existence_meta_data: Record<NpcName, NpcExistenceMetaData> = {
 		influence: 0,
 		exp: 0,
 		personality_trend: 0,
-		personality_type: PersonalityType.normal
+		personality_type: PersonalityType.normal,
+		gift_type: GiftType.none
 	},
 	/* 车队 */
 	[NpcName.verren]: {
@@ -111,28 +135,32 @@ const npc_existence_meta_data: Record<NpcName, NpcExistenceMetaData> = {
 		influence: 30,
 		exp: 0,
 		personality_trend: 0,
-		personality_type: PersonalityType.normal
+		personality_type: PersonalityType.normal,
+		gift_type: GiftType.skillBook_1
 	},
 	[NpcName.alda]: {
 		wealth: 20,
 		influence: 0,
 		exp: 0,
 		personality_trend: 30,
-		personality_type: PersonalityType.noble
+		personality_type: PersonalityType.noble,
+		gift_type: GiftType.food
 	},
 	[NpcName.darrel]: {
 		wealth: 30,
 		influence: 0,
 		exp: 0,
 		personality_trend: 30,
-		personality_type: PersonalityType.noble
+		personality_type: PersonalityType.noble,
+		gift_type: GiftType.equipment_0
 	},
 	[NpcName.leif]: {
 		wealth: 0,
 		influence: 20,
 		exp: 0,
 		personality_trend: 0,
-		personality_type: PersonalityType.normal
+		personality_type: PersonalityType.normal,
+		gift_type: GiftType.skillBook_1
 	},
 	/* 奥村 */
 	[NpcName.odar]: {
@@ -140,49 +168,56 @@ const npc_existence_meta_data: Record<NpcName, NpcExistenceMetaData> = {
 		influence: 90,
 		exp: 0,
 		personality_trend: 50,
-		personality_type: PersonalityType.vile
+		personality_type: PersonalityType.vile,
+		gift_type: GiftType.food
 	},
 	[NpcName.alan]: {
 		wealth: 20,
 		influence: 80,
 		exp: 0,
 		personality_trend: 0,
-		personality_type: PersonalityType.normal
+		personality_type: PersonalityType.normal,
+		gift_type: GiftType.food
 	},
 	[NpcName.frid]: {
 		wealth: 20,
 		influence: 50,
 		exp: 0,
 		personality_trend: 30,
-		personality_type: PersonalityType.noble
+		personality_type: PersonalityType.noble,
+		gift_type: GiftType.food
 	},
 	[NpcName.hold]: {
 		wealth: 30,
 		influence: 30,
 		exp: 0,
 		personality_trend: 0,
-		personality_type: PersonalityType.normal
+		personality_type: PersonalityType.normal,
+		gift_type: GiftType.jewelry
 	},
 	[NpcName.bert]: {
 		wealth: 50,
 		influence: 20,
 		exp: 0,
 		personality_trend: 0,
-		personality_type: PersonalityType.normal
+		personality_type: PersonalityType.normal,
+		gift_type: GiftType.equipment_0
 	},
 	[NpcName.rickerd]: {
 		wealth: 80,
 		influence: -80,
 		exp: 0,
 		personality_trend: 20,
-		personality_type: PersonalityType.vile
+		personality_type: PersonalityType.vile,
+		gift_type: GiftType.jewelry
 	},
 	[NpcName.jebar]: {
 		wealth: 20,
 		influence: 40,
 		exp: 0,
 		personality_trend: 0,
-		personality_type: PersonalityType.normal
+		personality_type: PersonalityType.normal,
+		gift_type: GiftType.equipment_0
 	},
 	/* 布林 */
 	[NpcName.zadok]: {
@@ -190,24 +225,22 @@ const npc_existence_meta_data: Record<NpcName, NpcExistenceMetaData> = {
 		influence: 0,
 		exp: 0,
 		personality_trend: 0,
-		personality_type: PersonalityType.normal
+		personality_type: PersonalityType.normal,
+		gift_type: GiftType.none
 	},
 	[NpcName.bern]: {
 		wealth: 60,
 		influence: 90,
 		exp: 0,
 		personality_trend: 0,
-		personality_type: PersonalityType.normal
+		personality_type: PersonalityType.normal,
+		gift_type: GiftType.equipment_0
 	}
 };
 
 /* 特质系统
-  特质是npc个性的概括，目前仅影响对话。
-*/
-enum TraitList {
-	freeAndAlone = 'freeAndAlone', // 独来独往
-	liveInRevenge = 'liveInRevenge' // 一心复仇
-}
+ */
+enum TraitList {}
 
 enum NpcStaus {
 	normal = 'normal', // 普通状态
@@ -220,11 +253,12 @@ enum NpcStaus {
   好感度到达一定程度，可以获得奖励或者得到惩罚。
 */
 enum RelationshipTier {
-	strange = 'strange', // 陌生 0 ~ 20
-	friendly = 'friendly', // 友好 20 ~ 40
 	friend = 'friend', // 好友 50 ~ 100
+	friendly = 'friendly', // 友好 20 ~ 50
+	strange = 'strange', // 陌生 0 ~ 20
 	hate = 'hate', // 厌恶 -20 ~ 0
-	hostile = 'hostile' // 敌视 -100 ~ -20
+	hostile = 'hostile', // 敌视 -70 ~ -20
+	enemy = 'enemy' // 敌对 -100 ~ -70
 }
 
 /* 设定关系游戏已经给出，玩家无法改变，合伙、雇佣和被雇佣... */
@@ -232,6 +266,7 @@ enum RelationshipTier {
 export {
 	call_npc,
 	CaravanNpcKey,
+	GiftType,
 	npc_existence_meta_data,
 	NpcExistenceMetaData,
 	NpcName,

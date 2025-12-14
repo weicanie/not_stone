@@ -54,9 +54,11 @@ model ai_npc {
   name            String @db.VarChar(50) // npc名称
   game_archive_id Int //逻辑外键，指向game_archive表的id
 
-  status              String @default("normal") @db.VarChar(50) // npc状态，默认活跃
-  relationshipValue   Int    @default(0) // 好感度，默认0
-  relationshipTier    String @default("strange") @db.VarChar(50) // 好感度等级，默认陌生
+  status            String  @default("normal") @db.VarChar(50) // npc状态，默认活跃
+  relationshipValue Int     @default(0) // 好感度，默认0
+  relationshipTier  String  @default("strange") @db.VarChar(50) // 好感度等级，默认陌生
+  gift_given        Boolean @default(false) // 是否已赠礼
+
   specialRelationship Json? // 特殊关系，例如：['lover','parent']
   traits              Json? // 特质，例如：['freeAndAlone','liveInRevenge']
 
@@ -76,6 +78,18 @@ model ai_conversation {
 
   create_at DateTime? @default(now()) @db.Timestamp(0)
   update_at DateTime? @default(now()) @db.Timestamp(0)
+}
+
+// 游玩目标
+model play_target {
+  id      Int     @id @default(autoincrement())
+  name    String  @db.VarChar(500) // 名称
+  icon    String  @db.VarChar(500) // 图标URL
+  done    Boolean @default(false) // 是否完成
+  descTxt String  @db.Text // 文字描述
+  descMd  String? @db.Text // Markdown描述
+
+  game_archive_id Int //逻辑外键，指向game_archive表的id
 }
 
 // 网站状态

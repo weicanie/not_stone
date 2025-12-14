@@ -1,4 +1,4 @@
-import { NpcName, TraitList, UserRole } from '@not_stone/shared';
+import { GiftType, NpcName, TargetList, TTarget, UserRole } from '@not_stone/shared';
 
 // 3位女角色使用详细说明，其它角色暂时使用简报
 const user_role_story = {
@@ -18,6 +18,7 @@ const user_role_story = {
 	[UserRole.Leosthenes]: `利奥斯典尼斯 (Leosthenes) 从小就被训练成为一名“阿格蒙”（Agemon），即伟大暴君的贴身保镖。在宣誓效忠时，他拒绝向暴君下跪，因此被投入地牢。幸运的是，他成功逃脱并流亡到奥尔多。他是一位技艺高超的战士，精通战斗和魔法。`,
 	[UserRole.Hilda]: `希尔达 (Hilda) 是来自法亚尔山脉的矮人怪物猎人。在她的捕鲸船队遭遇海难后，她独自在一个贫瘠的岛屿上幸存下来，磨练了她的狩猎技巧。她被一艘路过的斯卡迪亚商船救起，现在发现自己身处异国他乡的阿尔多，并对当地的怪物产生了浓厚的兴趣。`
 };
+
 const npc_story = {
 	/* 车队 */
 	[NpcName.verren]: `
@@ -163,18 +164,79 @@ const npc_story = {
 	[NpcName.zadok]: `扎多克 (Zadok) 是一名位于布林港口的酒鬼，他已对人生失去希望，酗酒度日，睡在大街上、天塌了也叫不醒他。`,
 	[NpcName.bern]: `博恩 (Bern) 是一名位于布林老楼区的士官长，中年秃顶男，和其他士官长一样，他很乐意为给他卖命的雇佣兵提供便利——这样就不用自己去卖命了。他在布林军队中的地位举足轻重，且努力将自己的影响力辐射到布林的新会——整合了布林的工匠木匠铁匠三大工会的庞大工会，新会生产的武器装备只用于军队，但博恩不介意把它们卖给可靠的佣兵。`
 };
-// 先不实装
-const trait_info = {
-	[TraitList.freeAndAlone]: `这个人独来独往惯了，从不依赖他人，很难和他人建立亲密关系。也许是长期与世隔绝，也可能是他们知道自由的代价，而选择了孤独的生活。`,
-	[TraitList.liveInRevenge]: `这个人已经决定此生为复仇而活，苦大仇深的心连恋情无法容下。`
-};
 
 const RelationshipThresholds = {
 	strange: { min: 0, max: 20 },
 	friendly: { min: 20, max: 50 },
 	friend: { min: 50, max: 100 },
 	hate: { min: -20, max: 0 },
-	hostile: { min: -100, max: -20 }
+	hostile: { min: -70, max: -20 },
+	enemy: { min: -100, max: -70 }
 };
 
-export { npc_story, RelationshipThresholds, trait_info, user_role_story, UserRole };
+const type_giftPoll = {
+	[GiftType.equipment_0]: [
+		'o_inv_backpack_treasure',
+		'o_inv_bag_belt01',
+		'o_inv_backpack_medical',
+		'o_inv_backpack_burglar',
+		'o_inv_backpack_trapper',
+		'o_inv_backpack',
+		'o_inv_backpack_alchemist',
+		'o_inv_backpack_hunter'
+	],
+	[GiftType.none]: [],
+	[GiftType.food]: [
+		'o_inv_crockpot_stew',
+		'o_inv_potatoes_mushrooms',
+		'o_inv_fish_broth',
+		'o_inv_salad_roots',
+		'o_inv_fish_vegs',
+		'o_inv_truffle_steak',
+		'o_inv_omelette_vegs',
+		'o_inv_roast_vegs'
+	],
+	[GiftType.skillBook_1]: [
+		'o_inv_treatise_sword1',
+		'o_inv_treatise_axe1',
+		'o_inv_treatise_dagger1',
+		'o_inv_treatise_gsword1',
+		'o_inv_treatise_staff1',
+		'o_inv_treatise_ranged1',
+		'o_inv_treatise_combat1'
+	],
+	[GiftType.jewelry]: [
+		'o_inv_ruby',
+		'o_inv_diamond',
+		'o_inv_emerald',
+		'o_inv_gold_nugget',
+		'o_loot_golden_plate'
+	]
+};
+// 用于档案建立时初始化目标
+const name_init_target: Record<TargetList, TTarget> = {
+	[TargetList.向上社交]: {
+		name: TargetList.向上社交,
+		icon: 'o_inv_book',
+		done: false,
+		descTxt: `任务：向上社交
+
+描述：维纶告诉你，佣兵得学着给自己找找靠山，而楼上的香水要从天花板渗下来了。
+
+达成条件：与里柯德（奥村布林特使）的关系达到友好或者敌视。`,
+		descMd: `任务：向上社交
+
+描述：维纶告诉你，佣兵得学着给自己找找靠山，而楼上的香水要从天花板渗下来了。
+
+达成条件：与里柯德（奥村布林特使）的关系达到友好或者敌视。`
+	}
+};
+
+export {
+	name_init_target,
+	npc_story,
+	RelationshipThresholds,
+	type_giftPoll,
+	user_role_story,
+	UserRole
+};

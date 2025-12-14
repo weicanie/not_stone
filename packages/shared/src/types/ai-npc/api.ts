@@ -15,6 +15,7 @@ interface GameAction {
 	code: ActionCode;
 	msg?: string; // 数据变更的日志提示
 	cnt?: number; // 需要在游戏程序中进行修改的数据的操作数量
+	itemKey?: string; // 物品key，用于npc赠礼
 	// 操作某一npc的车队认可度
 	// npcKey?: CaravanNpcKey;
 }
@@ -27,6 +28,10 @@ enum ActionCode {
 	AddExp = 2,
 	/* 修改声望 */
 	ChangeReputation = 3,
+	/* 当前对话npc与玩家交恶：攻击玩家 */
+	AttackPlayer = 8,
+	/* 赠礼：增加物品到玩家背包 */
+	AddPlayerItem = 9,
 	/* 增加车队认可度 */
 	// AddLoyalty = 4,
 	// -----mod端-----
