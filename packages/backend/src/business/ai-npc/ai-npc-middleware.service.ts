@@ -288,9 +288,9 @@ export class AiNpcMiddlewareService implements MWService {
 								msg: ``
 							});
 						}
+						target.done = true;
+						await this.aiNpcService.saveTargetToDB(archiveId, target);
 					}
-					target.done = true;
-					await this.aiNpcService.saveTargetToDB(archiveId, target);
 			}
 		}
 		return input;
