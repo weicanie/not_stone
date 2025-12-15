@@ -51,7 +51,8 @@ enum UserRole {
 	Jonna = 'Jonna',
 	Mahir = 'Mahir',
 	Leosthenes = 'Leosthenes',
-	Hilda = 'Hilda'
+	Hilda = 'Hilda',
+	Geralt = 'Geralt'
 }
 
 //中文名称到英文的转换
@@ -63,7 +64,8 @@ const cnNameToEnglish = {
 	约娜: UserRole.Jonna,
 	玛息尔: UserRole.Mahir,
 	琉斯典纳斯: UserRole.Leosthenes,
-	希尔达: UserRole.Hilda
+	希尔达: UserRole.Hilda,
+	杰洛特: UserRole.Geralt
 };
 
 /**
