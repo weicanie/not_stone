@@ -10,7 +10,7 @@ const PrivateRoute_NS: React.FC<PrivateRouteProps> = ({ children }) => {
 	const isLogin = Boolean(localStorage.getItem('not_stone_token'));
 	const location = useLocation();
 	if (!isLogin) {
-		return <Navigate to="/not_stone/login" state={{ from: location }} replace />;
+		return <Navigate to="/login" state={{ from: location }} replace />;
 	}
 	return children;
 };
