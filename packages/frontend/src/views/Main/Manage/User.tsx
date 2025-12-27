@@ -11,8 +11,8 @@
  * 2、用户封禁状态展示
  * 3、用户封禁状态更新按钮
  */
-import type { UserProfile } from '@prisma-ai/shared';
-import { ViolationType } from '@prisma-ai/shared';
+import type { UserProfile } from '@not_stone/shared';
+import { ViolationType } from '@not_stone/shared';
 import { Button, Input, Modal, Pagination, Table, Tabs, message } from 'antd';
 import React, { useState } from 'react';
 import AntdThemeHoc from '../../../components/AntdThemeHoc';
@@ -23,7 +23,7 @@ import {
 	useRecordViolation,
 	useUnbanUser
 } from '../../../services/manage/user';
-import { PageHeader } from '../components/PageHeader';
+import { PageHeader } from './PageHeader';
 
 const UserManagePage: React.FC = () => {
 	const [page, setPage] = useState(1);

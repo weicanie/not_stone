@@ -13,13 +13,13 @@
  * 4、通知撰写表单
  *
  */
-import { WebsiteStatus } from '@prisma-ai/shared';
+import { WebsiteStatus } from '@not_stone/shared';
 import { Button, Card, message, Spin } from 'antd';
 import React from 'react';
 import AntdThemeHoc from '../../../components/AntdThemeHoc';
 import { Badge } from '../../../components/ui/badge';
 import { useGetWebsiteStatus, useUpdateWebsiteStatus } from '../../../services/manage/service';
-import { PageHeader } from '../components/PageHeader';
+import { PageHeader } from './PageHeader';
 
 const ServiceManagePage: React.FC = () => {
 	const { data, isLoading } = useGetWebsiteStatus();

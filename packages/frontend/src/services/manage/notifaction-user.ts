@@ -2,11 +2,11 @@ import type {
 	GetUserNotificationsQuery,
 	GetUserNotificationsResponse,
 	ServerDataFormat
-} from '@prisma-ai/shared';
+} from '@not_stone/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCustomMutation, useCustomQuery } from '../../query/config';
 import { MANAGE_QUERY_KEY } from '../../query/keys';
-import { instance } from '../config';
+import { instance_not_stone as instance } from '../not_stone';
 
 /**
  * 获取用户通知列表
@@ -25,7 +25,7 @@ export const useGetUserNotifications = (params: GetUserNotificationsQuery) => {
 			return res.data;
 		},
 		{
-			enabled: !!localStorage.getItem('token'), // 仅在用户登录后调用
+			enabled: !!localStorage.getItem('not_stone_token'), // 仅在用户登录后调用
 			refetchInterval: 15 * 1000 // 15秒轮询一次
 		}
 	);

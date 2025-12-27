@@ -1,4 +1,4 @@
-import type { CreateNotificationDto } from '@prisma-ai/shared';
+import type { CreateNotificationDto } from '@not_stone/shared';
 import { Button, Form, Input, message, Modal, Pagination, Table } from 'antd';
 import React, { useState } from 'react';
 import AntdThemeHoc from '../../../components/AntdThemeHoc';
@@ -6,7 +6,7 @@ import {
 	useCreateNotification,
 	useGetNotificationsAdmin
 } from '../../../services/manage/notifaction-admin';
-import { PageHeader } from '../components/PageHeader';
+import { PageHeader } from './PageHeader';
 
 const NotificationManagePage: React.FC = () => {
 	const [page, setPage] = useState(1);

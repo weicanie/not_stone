@@ -13,8 +13,6 @@ import { Container } from './c-cpns/Container';
 export function PrimaryFeatures() {
 	const [tabOrientation, setTabOrientation] = useState<'horizontal' | 'vertical'>('horizontal');
 
-	const isOnline = import.meta.env.VITE_IS_ONLINE === 'true';
-
 	useEffect(() => {
 		const lgMediaQuery = window.matchMedia('(min-width: 1024px)');
 
@@ -37,16 +35,12 @@ export function PrimaryFeatures() {
 				'不再堆名词，AI 深挖你的经历，产出能打动面试官的“团队贡献 + 技术亮点 + 业务价值”。针对目标 JD(Job Description)，自动改写简历重点与表述，命中筛选关键词。',
 			image: screenshot1
 		},
-		...(isOnline
-			? []
-			: [
-					{
-						title: '人岗匹配',
-						description: '实时抓岗位 + 本地向量匹配与重排，只推真正适合你的职位，不再盲投。',
-						image: screenshot2
-					}
-				]),
 
+		{
+			title: '人岗匹配',
+			description: '实时抓岗位 + 本地向量匹配与重排，只推真正适合你的职位，不再盲投。',
+			image: screenshot2
+		},
 		{
 			title: '简历快速编辑：简历富文本编辑与pdf导出',
 			description: '支持Markdown语法，一键导出可直接投递的简历pdf。',
@@ -57,15 +51,11 @@ export function PrimaryFeatures() {
 			description: '基于项目知识库和用户记忆，提供个性化服务。',
 			image: screenshot4
 		},
-		...(isOnline
-			? []
-			: [
-					{
-						title: '高效准备面试：题库 + 思维导图 + Anki',
-						description: '理解 + 记忆双引擎，准备更系统，八股不焦虑。',
-						image: screenshot5
-					}
-				])
+		{
+			title: '高效准备面试：题库 + 思维导图 + Anki',
+			description: '理解 + 记忆双引擎，准备更系统，八股不焦虑。',
+			image: screenshot5
+		}
 	];
 
 	return (

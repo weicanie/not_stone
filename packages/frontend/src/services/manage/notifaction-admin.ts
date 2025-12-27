@@ -5,10 +5,10 @@ import type {
 	GetNotificationsQuery,
 	GetNotificationsResponse,
 	ServerDataFormat
-} from '@prisma-ai/shared';
+} from '@not_stone/shared';
 import { useCustomMutation, useCustomQuery } from '../../query/config';
 import { MANAGE_QUERY_KEY } from '../../query/keys';
-import { instance } from '../config';
+import { instance_not_stone as instance } from '../not_stone';
 
 /**
  * 获取通知列表（管理员视角）

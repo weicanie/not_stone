@@ -1,10 +1,10 @@
-import registAgreement from '@/assets/注册协议.md?raw';
-import privacyAgreement from '@/assets/隐私协议.md?raw';
+import registAgreement from '@/assets/not_stone/注册协议.md?raw';
+import privacyAgreement from '@/assets/not_stone/隐私协议.md?raw';
 import { Logo } from '@/components/Logo';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { register } from '@/services/login_regist';
+import { register } from '@/services/not_stone';
 import MilkdownEditor from '@/views/Main/components/Editor';
 import { Button } from '@/views/Saas/components/c-cpns/Button';
 import { SlimLayout } from '@/views/Saas/components/c-cpns/SlimLayout';
@@ -15,7 +15,7 @@ import {
 	type RegistFormType,
 	type RegistResponse,
 	type ServerDataFormat
-} from '@prisma-ai/shared';
+} from '@not_stone/shared';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -26,7 +26,7 @@ import { z } from 'zod';
 import Prism from '../../components/Prism';
 import Wall from '../../components/Wall';
 import { useCustomMutation } from '../../query/config';
-import { registerCaptcha } from '../../services/login_regist';
+import { registerCaptcha } from '../../services/not_stone';
 import { setRegistrationInfo } from '../../store/login';
 import { useTheme } from '../../utils/theme';
 import { TextField } from '../Saas/components/c-cpns/Fields';
@@ -155,9 +155,8 @@ export default function Register() {
 		<div className="h-screen">
 			<SlimLayout background={background}>
 				<div className="flex">
-					<Link to="/" aria-label="Home">
-						<Logo className="h-10 w-auto" />
-					</Link>
+					<Logo className="h-10 w-auto" />
+					<span className="relative top-[10px] text-[rgb(116,100,144)]">heart is not stone</span>
 				</div>
 				<h2 className="mt-20 text-lg font-semibold text-gray-900">免费开始</h2>
 				<p className="mt-2 text-sm text-gray-700">

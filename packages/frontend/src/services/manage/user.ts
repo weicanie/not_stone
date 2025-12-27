@@ -3,11 +3,11 @@ import type {
 	GetUsersResponse,
 	ServerDataFormat,
 	ViolationVo
-} from '@prisma-ai/shared';
+} from '@not_stone/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCustomMutation, useCustomQuery } from '../../query/config';
 import { MANAGE_QUERY_KEY } from '../../query/keys';
-import { instance } from '../config';
+import { instance_not_stone as instance } from '../not_stone';
 
 /**
  * 获取用户列表

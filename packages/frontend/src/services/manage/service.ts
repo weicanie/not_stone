@@ -1,8 +1,8 @@
-import type { ServerDataFormat, WebsiteStatusVo } from '@prisma-ai/shared';
+import type { ServerDataFormat, WebsiteStatusVo } from '@not_stone/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCustomMutation, useCustomQuery } from '../../query/config';
 import { MANAGE_QUERY_KEY } from '../../query/keys';
-import { instance } from '../config';
+import { instance_not_stone as instance } from '../not_stone';
 
 /**
  * 获取网站服务状态

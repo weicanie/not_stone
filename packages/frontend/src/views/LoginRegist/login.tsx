@@ -6,7 +6,7 @@ import { Logo } from '@/components/Logo';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Button } from '@/views/Saas/components/c-cpns/Button';
 import { SlimLayout } from '@/views/Saas/components/c-cpns/SlimLayout';
-import { loginformSchema, type LoginFormType, type LoginResponse } from '@prisma-ai/shared';
+import { loginformSchema, type LoginFormType, type LoginResponse } from '@not_stone/shared';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import Prism from '../../components/Prism';
 import Wall from '../../components/Wall';
 import { useCustomMutation } from '../../query/config';
-import { login } from '../../services/login_regist';
+import { login } from '../../services/not_stone';
 import { loginSuccess, selectIsAutoFill, selectPassword, selectUsername } from '../../store/login';
 import { eventBusService, EventList } from '../../utils/EventBus/event-bus.service';
 import { useTheme } from '../../utils/theme';
@@ -35,13 +35,13 @@ export default function Login() {
 		onSuccess: async res => {
 			toast.success('登录成功');
 			res.data.userId = res.data.id;
-			localStorage.setItem('token', res.data.token);
-			localStorage.setItem('userInfo', JSON.stringify(res.data));
+			localStorage.setItem('not_stone_token', res.data.token);
+			localStorage.setItem('not_stone_userInfo', JSON.stringify(res.data));
 			//发送token更新事件，以便微应用更新token
 			eventBusService.emit(EventList.tokenUpdated);
 			// 登录成功后清除自动填写信息
 			dispatch(loginSuccess());
-			navigate('/main');
+			navigate('/main/archive');
 		}
 	});
 
@@ -97,9 +97,8 @@ export default function Login() {
 		<div className="h-screen">
 			<SlimLayout background={background}>
 				<div className="flex">
-					<Link to="/" aria-label="Home">
-						<Logo className="h-10 w-auto" />
-					</Link>
+					<Logo className="h-10 w-auto" />
+					<span className="relative top-[10px] text-[rgb(116,100,144)]">heart is not stone</span>
 				</div>
 				<h2 className="mt-20 text-lg font-semibold text-gray-900">登录您的账户</h2>
 				<p className="mt-2 text-sm text-gray-700">

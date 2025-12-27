@@ -1,4 +1,4 @@
-import type { UserNotification } from '@prisma-ai/shared';
+import type { UserNotification } from '@not_stone/shared';
 import { List, Pagination, Tabs } from 'antd';
 import { Text } from 'lucide-react';
 import React, { Suspense, useEffect, useState } from 'react';
@@ -101,7 +101,7 @@ const UserNotificationPage: React.FC = () => {
 				enablePreload={true}
 			>
 				<Suspense fallback={<div>加载编辑器...</div>}>
-					<MilkdownEditor isCardMode={true} mdSelector={() => content || '暂无内容'} />
+					<MilkdownEditor isCardMode={true} type="show" mdSelector={() => content || '暂无内容'} />
 				</Suspense>
 			</ClickCollapsible>
 		);
