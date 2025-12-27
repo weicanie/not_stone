@@ -29,8 +29,10 @@ services:
       # HTTPS (如需启用)
       # - '443:443'
     volumes:
+      - ./packages/frontend_ns/dist:/usr/share/nginx/html_ns
       - ./nginx/logs:/var/log/nginx # Nginx 日志
-      - ./nginx/conf/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/conf/default.online.conf:/etc/nginx/conf.d/default.conf
+      - /etc/nginx/ssl:/etc/nginx/ssl
       # 如果启用 HTTPS，还需要
       # - ./nginx/ssl:/etc/nginx/ssl
     restart: unless-stopped

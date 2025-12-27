@@ -163,7 +163,7 @@ export class AiNpcService {
 		});
 
 		if (!curArchiveId?.cur_game_archive_id) {
-			throw Error('您当前没有游戏档案');
+			throw Error('没有启用任何档案');
 		}
 
 		return await this.dbService.game_archive.findFirst({

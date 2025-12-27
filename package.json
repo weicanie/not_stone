@@ -28,7 +28,8 @@
 	},
 	"scripts": {
 		"prepare": "husky",
-		"dev": "concurrently --kill-others-on-fail --kill-timeout 30000 --prefix \"[{name}]\" --names \"backend,mcp-server,shared\" --prefix-colors \"blue,green,yellow\" \"cd packages/backend && npm run dev\" \"cd packages/mcp-server && npm run dev\" \"cd packages/shared && npm run dev\"",
+		"dev": "concurrently --kill-others-on-fail --kill-timeout 30000 --prefix \"[{name}]\" --names \"backend,frontend,mcp-server,shared\" --prefix-colors \"blue,green,yellow,purple\" \"cd packages/backend && npm run dev\" \"cd packages/frontend && npm run dev\" \"cd packages/mcp-server && npm run dev\" \"cd packages/shared && npm run dev\"",
+		"dev:no-b": "concurrently --kill-others-on-fail --kill-timeout 30000 --prefix \"[{name}]\" --names \"frontend,mcp-server,shared,deepwiki-down\" --prefix-colors \"blue,green,yellow,purple\" \"cd packages/frontend && npm run dev\" \"cd packages/mcp-server && npm run dev\" \"cd packages/shared && npm run dev\" \"cd packages/deepwiki-down && npm run start\"",
 		"dev:b": "cd packages/backend && npm run dev",
 		"dev:s": "cd packages/shared && npm run dev",
 		"dev:lerna": "pnpm lerna run dev --stream",
