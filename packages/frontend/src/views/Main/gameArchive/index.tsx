@@ -127,7 +127,7 @@ const GameArchivePage: React.FC = () => {
 				description="为您的游戏存档建立并启用一个档案，每个存档应该对应唯一的档案。如果您切换到另一个存档，就需要为它启用另一个档案。"
 			/>
 			<div className="pl-10 pr-10">
-				{curArchive && (
+				{curArchive ? (
 					<div className="mb-6 p-4 border rounded-lg bg-card text-card-foreground shadow-sm">
 						<h3 className="text-lg font-semibold mb-2">当前正在使用的档案</h3>
 						<div className="flex gap-4 text-sm">
@@ -144,6 +144,11 @@ const GameArchivePage: React.FC = () => {
 								{curArchive.id}
 							</div>
 						</div>
+					</div>
+				) : (
+					<div className="mb-6 p-4 border rounded-lg bg-card text-card-foreground shadow-sm">
+						<h3 className="text-lg font-semibold mb-2">当前正在使用的档案</h3>
+						<div className="flex gap-4 text-sm">无</div>
 					</div>
 				)}
 				<ConfigDataTable data={archives} dataTableConfig={dataTableConfig} />

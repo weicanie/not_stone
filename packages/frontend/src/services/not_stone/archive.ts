@@ -35,7 +35,7 @@ async function setCurArchive(archiveId: number) {
 
 // 获取当前档案
 async function getCurArchive() {
-	const res = await instance.get<SDF<GameArchive>>('/ai-npc/get_cur_archive');
+	const res = await instance.get<SDF<GameArchive | null>>('/ai-npc/get_cur_archive');
 	return res.data;
 }
 

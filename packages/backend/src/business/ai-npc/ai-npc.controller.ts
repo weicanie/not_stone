@@ -173,11 +173,8 @@ export class AiNpcController {
 
 	@Get('get_cur_archive')
 	@RequireLogin()
-	async getCurArchive(@UserInfo() userInfo: UserInfoFromToken): Promise<GameArchive> {
+	async getCurArchive(@UserInfo() userInfo: UserInfoFromToken): Promise<GameArchive | null> {
 		const archive = await this.aiNpcService.getCurGameArchive(userInfo);
-		if (!archive) {
-			throw Error('用户没有当前游戏档案');
-		}
 		return archive;
 	}
 
