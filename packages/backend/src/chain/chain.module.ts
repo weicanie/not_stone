@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AgentModule } from '../agent/agent.module';
 import { CacheModule } from '../cache/cache.module';
-import { ClientModule } from '../mcp-client/mcp-client.module';
 import { ModelModule } from '../model/model.module';
 import { PromptModule } from '../prompt/prompt.module';
 import { WithFormfixChain } from '../utils/abstract';
@@ -19,7 +17,7 @@ import { ChainService } from './chain.service';
 			useExisting: ChainService
 		}
 	],
-	imports: [AgentModule, ModelModule, PromptModule, ClientModule, CacheModule],
+	imports: [ModelModule, PromptModule, CacheModule],
 	exports: [ChainService, AichatChainService, WithFormfixChain]
 })
 export class ChainModule {}
