@@ -1,14 +1,14 @@
 # LLM-based RPG Game AI NPC Dialogue & Social System
 
-Taking the game StoneShard as an example.
-
-<br>
-
-You can think of this project as bringing [SillyTavern](https://github.com/SillyTavern/SillyTavern) into StoneShard.
-
 <p align="center">
   <a href="../README.md">简体中文</a> | English
 </p>
+
+<br>
+
+Taking the game StoneShard as an example.
+
+You can think of this project as bringing [SillyTavern](https://github.com/SillyTavern/SillyTavern) into StoneShard.
 
 ## I. Features Introduction
 
@@ -33,11 +33,12 @@ Socializing with NPCs is dynamic and affects the game world, including but not l
 <br>
 
 **4. Original Quests:** In addition, some original quests are provided.
+
 1. Quest: Upward Social Mobility
-Description: Verren tells you that a mercenary has to learn to find a backer for himself, and the perfume from upstairs is about to seep through the ceiling.
-Trigger method: Triggered immediately upon entering the game
-Completion condition: Reach friendly or hostile relationship with Rickard
-Quest reward: Waist Bag + 700 Crowns / Treasure Hunter's Backpack + 300 Osbrook Reputation
+   Description: Verren tells you that a mercenary has to learn to find a backer for himself, and the perfume from upstairs is about to seep through the ceiling.
+   Trigger method: Triggered immediately upon entering the game
+   Completion condition: Reach friendly or hostile relationship with Rickard
+   Quest reward: Waist Bag + 700 Crowns / Treasure Hunter's Backpack + 300 Osbrook Reputation
 
 <br>
 
@@ -92,7 +93,7 @@ Press F6 in the game, paste the profile data, and press Enter.
 
 1. Click NPC, open the dialogue box
 2. Press F5 to open the input box, enter what you want to say
-If it displays (You are talking to air...), it means the NPC does not support dialogue.
+   If it displays (You are talking to air...), it means the NPC does not support dialogue.
 
 Currently supported NPCs for dialogue:
 

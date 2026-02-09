@@ -1,12 +1,14 @@
 # 基于 LLM 的 RPG 游戏 AI NPC 对话与社交系统
 
-以游戏 StoneShard 为例。
-<br>
-你可以认为这个项目致力于将 [SillyTavern](https://github.com/SillyTavern/SillyTavern) 开到StoneShard里。
-
 <p align="center">
   简体中文 | <a href="i18n/README-EN.md">English</a>
 </p>
+
+<br>
+
+以游戏 StoneShard 为例。
+
+你可以认为这个项目致力于将 [SillyTavern](https://github.com/SillyTavern/SillyTavern) 开到StoneShard里。
 
 ## 一、功能介绍
 
