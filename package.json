@@ -28,11 +28,9 @@
 	},
 	"scripts": {
 		"prepare": "husky",
-		"dev": "concurrently --kill-others-on-fail --kill-timeout 30000 --prefix \"[{name}]\" --names \"backend,frontend,mcp-server,shared\" --prefix-colors \"blue,green,yellow,purple\" \"cd packages/backend && npm run dev\" \"cd packages/frontend && npm run dev\" \"cd packages/mcp-server && npm run dev\" \"cd packages/shared && npm run dev\"",
-		"dev:no-b": "concurrently --kill-others-on-fail --kill-timeout 30000 --prefix \"[{name}]\" --names \"frontend,mcp-server,shared,deepwiki-down\" --prefix-colors \"blue,green,yellow,purple\" \"cd packages/frontend && npm run dev\" \"cd packages/mcp-server && npm run dev\" \"cd packages/shared && npm run dev\" \"cd packages/deepwiki-down && npm run start\"",
-		"dev:b": "cd packages/backend && npm run dev",
-		"dev:s": "cd packages/shared && npm run dev",
-		"dev:lerna": "pnpm lerna run dev --stream",
+		"dev": "concurrently --kill-others-on-fail --kill-timeout 30000 --prefix \"[{name}]\" --names \"backend,frontend,shared\" --prefix-colors \"blue,green\" \"cd packages/backend && npm run dev\" \"cd packages/frontend && npm run dev\" \"cd packages/shared && npm run dev\"",
+		"dev:f": "concurrently --kill-others-on-fail --kill-timeout 30000 --prefix \"[{name}]\" --names \"shared,frontend\" --prefix-colors \"blue,green\" \"cd packages/shared && npm run dev\" \"cd packages/frontend && npm run dev\"",
+		"dev:b": "concurrently --kill-others-on-fail --kill-timeout 30000 --prefix \"[{name}]\" --names \"backend,shared\" --prefix-colors \"blue,green\" \"cd packages/backend && npm run dev\" \"cd packages/shared && npm run dev\"",
 		"format": "prettier --write \"**/src/**/*.[ts,tsx,css]\" \"**/test/**/*.ts\"",
 		"lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
 		"release": "pnpm exec lerna publish --conventional-commits"

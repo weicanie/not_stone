@@ -22,7 +22,7 @@ services:
       # 覆盖env_file中的同名环境变量
       DATABASE_URL: mysql://root:qwqw1314.@mysql-container:3306/not_stone
     ports:
-      - '3011:3003'
+      - '3007:3003'
     volumes:
       - ./docker-data/nest-app/logs:/app/packages/backend/logs
   mysql-container:
