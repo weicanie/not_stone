@@ -1,6 +1,6 @@
 # LLM-based RPG Game AI NPC Dialogue & Social System
 
-<p align="center">
+<p >
   <a href="../README.md">简体中文</a> | English
 </p>
 
@@ -20,9 +20,9 @@ Socializing with NPCs is dynamic and affects the game world, including but not l
 
 <br>
 
-<img src="https://github.com/weicanie/prisma-ai/blob/main/images/readme/image1.png" alt="Logo"/>
+<img src="https://github.com/weicanie/not_stone/blob/main/images/readme/image1.png" alt="Logo"/>
 
-<img src="https://github.com/weicanie/prisma-ai/blob/main/images/readme/image2.png" alt="Logo"/>
+<img src="https://github.com/weicanie/not_stone/blob/main/images/readme/image2.png" alt="Logo"/>
 
 **2. Special Relationships & Romance:** You can establish special relationships with NPCs such as lovers, sworn enemies, brothers, etc.
 

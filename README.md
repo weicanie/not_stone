@@ -1,6 +1,6 @@
 # 基于 LLM 的 RPG 游戏 AI NPC 对话与社交系统
 
-<p align="center">
+<p>
   简体中文 | <a href="i18n/README-EN.md">English</a>
 </p>
 
@@ -20,9 +20,9 @@ npc通过llm（如deepseek、openai），可以和你自然交流并做出自然
 
 <br>
 
-<img src="https://github.com/weicanie/prisma-ai/blob/main/images/readme/image1.png" alt="Logo"/>
+<img src="https://github.com/weicanie/not_stone/blob/main/images/readme/image1.png" alt="Logo"/>
 
-<img src="https://github.com/weicanie/prisma-ai/blob/main/images/readme/image2.png" alt="Logo"/>
+<img src="https://github.com/weicanie/not_stone/blob/main/images/readme/image2.png" alt="Logo"/>
 
 **2、特殊关系&谈情说爱**：可以和npc建立情侣、死敌、兄弟等特殊关系。
 
