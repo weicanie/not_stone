@@ -8,7 +8,7 @@
 
 以游戏 StoneShard 为例。
 
-你可以认为这个项目致力于将 [SillyTavern](https://github.com/SillyTavern/SillyTavern) 开到StoneShard里。
+和bro吹吹牛逼，和妹子调调情，就像实际会发生的那样。
 
 ## 一、功能介绍
 

@@ -8,7 +8,7 @@
 
 Taking the game StoneShard as an example.
 
-You can think of this project as bringing [SillyTavern](https://github.com/SillyTavern/SillyTavern) into StoneShard.
+Chatting with bros, flirting with girls, just like it would happen in real life.
 
 ## I. Features Introduction
 
